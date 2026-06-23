@@ -4,21 +4,39 @@
 [![CI](https://github.com/rafael-matos-dev/nfse-java-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/rafael-matos-dev/nfse-java-mcp/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-SDK Java **sem dependências de runtime** e **servidor MCP** para emitir **NFS-e Nacional** (padrão nacional brasileiro da Nota Fiscal de Serviço eletrônica). Feito para devs — e, via MCP, usável por qualquer pessoa através de um agente de IA: ela só aponta o certificado, passa os dados do tomador (ou uma nota de exemplo), a descrição e o valor, e o agente emite.
+**Emita NFS-e Nacional pelo seu agente de IA — ou direto do seu código Java.**
+
+No coração, `nfse-java-mcp` é um **SDK Java** (zero dependências de runtime) para a **NFS-e Nacional** (padrão nacional brasileiro da Nota Fiscal de Serviço eletrônica). Sobre esse motor vêm duas portas de entrada: um **servidor MCP**, para um agente de IA emitir notas conversando (a pessoa só aponta o certificado, dá os dados do tomador — ou uma nota de exemplo — a descrição e o valor), e uma **CLI**, para o terminal. As três camadas usam o mesmo núcleo.
 
 > ⚠️ **Documento fiscal real.** O padrão é **homologação** (produção restrita, ambiente de teste). Emitir em **produção** cria um documento fiscal com efeito tributário real e exige confirmação explícita (`confirmarProducao=true` / `--confirmar-producao`).
 
 ## Por que existe
 
-Já existem servidores MCP de NFS-e Nacional em outras linguagens — o conceito não é inédito (veja [Créditos](#créditos-e-prior-art)). O que faltava era um **motor Java limpo e embarcável**: as bibliotecas Java existentes são municipais ou provas de conceito. Este projeto preenche essa lacuna e, por cima do SDK, oferece um servidor MCP em Java (1 runtime só).
+As bibliotecas Java de NFS-e existentes atendem padrões municipais antigos ou são provas de conceito. Faltava um **motor Java limpo e embarcável** para o padrão **nacional** — com zero dependências de runtime — e, por cima dele, um **servidor MCP** (1 runtime só) que deixa um agente de IA emitir notas conversando. É isso que este projeto entrega.
 
-## Três formas de usar
+## Arquitetura: um motor, três portas
 
-| Forma | Para quem | Como |
-|------|-----------|------|
-| **Servidor MCP** | agente de IA (Claude Desktop, etc.) | registra o jar e conversa |
-| **CLI** | humanos e agentes que rodam shell | `java -jar nfse-cli.jar <comando>` |
-| **SDK** | integração em sistemas Java | `NfseRunner` / `Nfse` |
+O `nfse-sdk` é o motor. O `nfse-mcp` e o `nfse-cli` são camadas finas por cima dele — não reimplementam nada, só expõem o SDK para públicos diferentes.
+
+```
+   agente de IA            terminal            seu código Java
+        │                     │                       │
+  ┌─────▼─────┐         ┌─────▼─────┐                 │
+  │ nfse-mcp  │         │ nfse-cli  │                 │
+  │ (serv MCP)│         │  (CLI)    │                 │
+  └─────┬─────┘         └─────┬─────┘                 │
+        └──────────┬──────────┴─────────────────────-┘
+                   │
+            ┌──────▼──────┐
+            │  nfse-sdk   │   ← o motor (Maven Central, zero-dep)
+            └─────────────┘
+```
+
+| Módulo | O que é | Para quem | Distribuição |
+|--------|---------|-----------|--------------|
+| **`nfse-sdk`** | a biblioteca/motor | devs que integram em Java | Maven Central |
+| **`nfse-mcp`** | servidor MCP sobre o SDK | agentes de IA | jar no GitHub Releases |
+| **`nfse-cli`** | CLI sobre o SDK | humanos e scripts | jar no GitHub Releases |
 
 ## Requisitos
 
@@ -128,14 +146,6 @@ O fluxo mais simples para quem já emite: aponte uma nota anterior (XML de DPS o
 
 - A API oficial de download do DANFSe está prevista para ser desligada em **2026-07-01**; depois disso o PDF precisará ser gerado localmente (candidato a uma próxima versão).
 - Geração de classes JAXB a partir dos XSDs oficiais e endurecimento de validações: próximos passos.
-
-## Créditos e prior art
-
-A ideia de um MCP para a NFS-e Nacional já existe e merece crédito:
-- [`saviski/nfse-nacional-mcp`](https://github.com/saviski/nfse-nacional-mcp) — emissão via MCP em Python.
-- [`SamuelMoraesF/mcp-nfse-nacional`](https://github.com/SamuelMoraesF/mcp-nfse-nacional) — consulta via MCP.
-
-Este projeto é uma implementação independente em **Java**, com foco em um SDK limpo e embarcável.
 
 ## Licença
 
