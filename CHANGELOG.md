@@ -5,6 +5,8 @@ e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+## [0.2.0] - 2026-06-23
+
 ### Adicionado
 - Workflow de release (GitHub Actions): ao publicar uma tag `v*`, anexa `nfse-mcp.jar` e
   `nfse-cli.jar` a um GitHub Release.
@@ -29,5 +31,6 @@ e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
 - `nfse-cli` — CLI para humanos e agentes que rodam shell.
 - Homologação por padrão; produção exige confirmação explícita.
 
-[Não lançado]: https://github.com/rafael-matos-dev/nfse-java-mcp/compare/v0.1.0...HEAD
+[Não lançado]: https://github.com/rafael-matos-dev/nfse-java-mcp/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/rafael-matos-dev/nfse-java-mcp/releases/tag/v0.2.0
 [0.1.0]: https://github.com/rafael-matos-dev/nfse-java-mcp/releases/tag/v0.1.0
