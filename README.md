@@ -1,5 +1,9 @@
 # nfse-java-mcp
 
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.rafael-matos-dev/nfse-sdk?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.rafael-matos-dev/nfse-sdk)
+[![CI](https://github.com/rafael-matos-dev/nfse-java-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/rafael-matos-dev/nfse-java-mcp/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 SDK Java **sem dependências de runtime** e **servidor MCP** para emitir **NFS-e Nacional** (padrão nacional brasileiro da Nota Fiscal de Serviço eletrônica). Feito para devs — e, via MCP, usável por qualquer pessoa através de um agente de IA: ela só aponta o certificado, passa os dados do tomador (ou uma nota de exemplo), a descrição e o valor, e o agente emite.
 
 > ⚠️ **Documento fiscal real.** O padrão é **homologação** (produção restrita, ambiente de teste). Emitir em **produção** cria um documento fiscal com efeito tributário real e exige confirmação explícita (`confirmarProducao=true` / `--confirmar-producao`).
@@ -22,7 +26,11 @@ Já existem servidores MCP de NFS-e Nacional em outras linguagens — o conceito
 - Maven 3.9+ (só para buildar a partir do código)
 - Certificado digital **A1** (`.pfx`/`.p12`) do prestador
 
-## Build
+## Instalação
+
+A forma mais rápida: baixe os jars prontos da [última release](https://github.com/rafael-matos-dev/nfse-java-mcp/releases/latest) — `nfse-mcp-<versao>.jar` (servidor MCP) e `nfse-cli-<versao>.jar` (CLI). Não precisa compilar.
+
+Ou compile do código:
 
 ```bash
 mvn clean package
@@ -84,7 +92,7 @@ java -jar $JAR emitir --arquivo nota.json --ambiente producao --confirmar-produc
 
 ## Uso como SDK
 
-Adicione a dependência (após publicação no Maven Central):
+Disponível no Maven Central:
 
 ```xml
 <dependency>

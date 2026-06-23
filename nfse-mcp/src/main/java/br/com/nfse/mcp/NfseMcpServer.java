@@ -96,12 +96,12 @@ public final class NfseMcpServer {
                 Map<String, Object> a = req.arguments();
                 String xml = lerArquivo(exigirTexto(a, "caminhoXmlExemplo"));
                 DpsReemissao.Overrides overrides = new DpsReemissao.Overrides(
-                    longOrNull(a.get("numero")),
+                    longOrNull(a.get("numero"), "numero"),
                     texto(a, "serie"),
                     tomadorOverride(a.get("tomador")),
                     texto(a, "descricao"),
-                    decimalOrNull(a.get("valor")),
-                    dateOrNull(a.get("competencia")),
+                    decimalOrNull(a.get("valor"), "valor"),
+                    dateOrNull(a.get("competencia"), "competencia"),
                     texto(a, "versao"));
                 return ok(NfseRunner.emitirDeExemplo(xml, overrides, ambiente(a), certificado(a), confirmar(a)));
             }));
@@ -135,7 +135,7 @@ public final class NfseMcpServer {
             (ex, req) -> {
                 Map<String, Object> a = req.arguments();
                 return ok(NfseRunner.cancelar(
-                    exigirTexto(a, "chaveAcesso"), texto(a, "autorCpfCnpj"), intOr(a.get("numeroPedido"), 1),
+                    exigirTexto(a, "chaveAcesso"), texto(a, "autorCpfCnpj"), intOr(a.get("numeroPedido"), 1, "numeroPedido"),
                     exigirTexto(a, "codigoMotivo"), exigirTexto(a, "descricaoMotivo"),
                     ambiente(a), certificado(a), confirmar(a)));
             }));
@@ -279,38 +279,57 @@ public final class NfseMcpServer {
         return value == null ? null : value.toString();
     }
 
-    private static Long longOrNull(Object value) {
+    private static Long longOrNull(Object value, String campo) {
         if (value == null) {
             return null;
         }
         if (value instanceof Number number) {
             return number.longValue();
         }
-        return Long.valueOf(value.toString().trim());
+        try {
+            return Long.valueOf(value.toString().trim());
+        } catch (NumberFormatException exception) {
+            throw new IllegalArgumentException(campo + " deve ser um inteiro (recebido: " + value + ").");
+        }
     }
 
-    private static int intOr(Object value, int fallback) {
+    private static int intOr(Object value, int fallback, String campo) {
         if (value == null) {
             return fallback;
         }
         if (value instanceof Number number) {
             return number.intValue();
         }
-        return Integer.parseInt(value.toString().trim());
+        try {
+            return Integer.parseInt(value.toString().trim());
+        } catch (NumberFormatException exception) {
+            throw new IllegalArgumentException(campo + " deve ser um inteiro (recebido: " + value + ").");
+        }
     }
 
-    private static BigDecimal decimalOrNull(Object value) {
+    private static BigDecimal decimalOrNull(Object value, String campo) {
         if (value == null) {
             return null;
         }
         if (value instanceof Number number) {
             return new BigDecimal(number.toString());
         }
-        return new BigDecimal(value.toString().trim());
+        try {
+            return new BigDecimal(value.toString().trim());
+        } catch (NumberFormatException exception) {
+            throw new IllegalArgumentException(campo + " deve ser um numero (recebido: " + value + ").");
+        }
     }
 
-    private static LocalDate dateOrNull(Object value) {
-        return value == null ? null : LocalDate.parse(value.toString().trim());
+    private static LocalDate dateOrNull(Object value, String campo) {
+        if (value == null) {
+            return null;
+        }
+        try {
+            return LocalDate.parse(value.toString().trim());
+        } catch (java.time.format.DateTimeParseException exception) {
+            throw new IllegalArgumentException(campo + " deve ser uma data YYYY-MM-DD (recebido: " + value + ").");
+        }
     }
 
     private NfseMcpServer() {

@@ -32,6 +32,9 @@ public record EmitirNfseRequest(
         String municipio = required(codigoMunicipio, "codigoMunicipio");
         String serieDps = valueOr(serie, "1");
         long numeroDps = required(numero, "numero");
+        if (numeroDps <= 0) {
+            throw new IllegalArgumentException("numero deve ser maior que zero (recebido: " + numeroDps + ").");
+        }
         LocalDate competencia = valueOr(dataCompetencia, LocalDate.now());
 
         return new Dps(

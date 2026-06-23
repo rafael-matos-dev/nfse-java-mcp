@@ -57,13 +57,18 @@ public final class NfseRunner {
     public static EmissaoResult emitir(EmitirNfseRequest request, Ambiente ambiente,
                                        CertificadoA1 cert, boolean confirmarProducao) {
         exigirConfirmacaoProducao(ambiente, confirmarProducao);
-        Dps dps = request.toDps(cert.cpfCnpj().orElse(null));
+        validarCertificado(cert);
+        // Quando o prestador nao informa documento, herdamos o do certificado — que precisa existir.
+        String cpfCnpjPrestador = cert.cpfCnpj().orElseThrow(() -> new IllegalStateException(
+            "Nao foi possivel extrair CPF/CNPJ do certificado; informe o documento do prestador no payload."));
+        Dps dps = request.toDps(cpfCnpjPrestador);
         return emitirDps(dps, ambiente, cert, "emitir");
     }
 
     public static EmissaoResult emitirDeExemplo(String xmlExemplo, DpsReemissao.Overrides overrides,
                                                 Ambiente ambiente, CertificadoA1 cert, boolean confirmarProducao) {
         exigirConfirmacaoProducao(ambiente, confirmarProducao);
+        validarCertificado(cert);
         Dps exemplo = DpsXmlReader.read(xmlExemplo);
         Dps dps = DpsReemissao.reemitir(exemplo, overrides);
         return emitirDps(dps, ambiente, cert, "emitir-de-exemplo");
@@ -94,6 +99,7 @@ public final class NfseRunner {
                                            String codigoMotivo, String descricaoMotivo,
                                            Ambiente ambiente, CertificadoA1 cert, boolean confirmarProducao) {
         exigirConfirmacaoProducao(ambiente, confirmarProducao);
+        validarCertificado(cert);
         String autor = (cpfCnpjAutor == null || cpfCnpjAutor.isBlank()) ? cert.cpfCnpj().orElse(null) : cpfCnpjAutor;
         CancelamentoNfse cancelamento = new CancelamentoNfse(
             chaveAcesso, autor, OffsetDateTime.now(), numeroPedido, codigoMotivo, descricaoMotivo, "nfse-java-mcp");
@@ -125,6 +131,15 @@ public final class NfseRunner {
             return Ambiente.PRODUCAO;
         }
         throw new IllegalArgumentException("Ambiente invalido: " + valor + " (use homologacao ou producao).");
+    }
+
+    // Assinar com certificado fora da validade gera documento invalido — falha cedo, antes da rede.
+    private static void validarCertificado(CertificadoA1 cert) {
+        if (cert.isExpired(Clock.systemUTC())) {
+            throw new IllegalStateException(
+                "Certificado A1 fora da validade (valido de " + cert.validFrom() + " a " + cert.validUntil()
+                    + "); nao e possivel emitir/cancelar.");
+        }
     }
 
     private static void exigirConfirmacaoProducao(Ambiente ambiente, boolean confirmarProducao) {

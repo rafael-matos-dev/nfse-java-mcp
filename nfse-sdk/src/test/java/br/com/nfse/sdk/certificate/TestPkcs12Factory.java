@@ -28,17 +28,30 @@ public final class TestPkcs12Factory {
     }
 
     public static void create(Path path, char[] password, String alias, String cnpj) throws Exception {
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        create(path, password, alias, cnpj,
+            Date.from(now.minus(1, ChronoUnit.DAYS)),
+            Date.from(now.plus(365, ChronoUnit.DAYS)));
+    }
+
+    /** Cria um PKCS12 ja expirado (notAfter no passado), para testar bloqueios de validade. */
+    public static void createExpired(Path path, char[] password, String alias, String cnpj) throws Exception {
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        create(path, password, alias, cnpj,
+            Date.from(now.minus(30, ChronoUnit.DAYS)),
+            Date.from(now.minus(1, ChronoUnit.DAYS)));
+    }
+
+    public static void create(Path path, char[] password, String alias, String cnpj,
+                              Date notBefore, Date notAfter) throws Exception {
         ensureBouncyCastleProvider();
 
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
         keyPairGenerator.initialize(2048, new SecureRandom());
         KeyPair keyPair = keyPairGenerator.generateKeyPair();
 
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
         X500Name subject = new X500Name("CN=NFSE TESTE " + cnpj + ",O=NFSE Nacional Kit,C=BR");
         BigInteger serial = new BigInteger(160, new SecureRandom()).abs();
-        Date notBefore = Date.from(now.minus(1, ChronoUnit.DAYS));
-        Date notAfter = Date.from(now.plus(365, ChronoUnit.DAYS));
 
         X509v3CertificateBuilder certificateBuilder = new JcaX509v3CertificateBuilder(
             subject,
