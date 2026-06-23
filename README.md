@@ -84,6 +84,16 @@ java -jar $JAR emitir --arquivo nota.json --ambiente producao --confirmar-produc
 
 ## Uso como SDK
 
+Adicione a dependência (após publicação no Maven Central):
+
+```xml
+<dependency>
+  <groupId>io.github.rafael-matos-dev</groupId>
+  <artifactId>nfse-sdk</artifactId>
+  <version>0.1.0</version>
+</dependency>
+```
+
 ```java
 var cert = NfseRunner.carregarCertificado("/caminho/cert.pfx", "senha");
 var resultado = NfseRunner.emitir(

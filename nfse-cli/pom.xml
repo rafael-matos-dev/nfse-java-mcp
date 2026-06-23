@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>br.com.nfse</groupId>
+        <groupId>io.github.rafael-matos-dev</groupId>
         <artifactId>nfse-java-mcp</artifactId>
         <version>0.1.0</version>
     </parent>
@@ -13,9 +13,17 @@
     <name>nfse-cli</name>
     <description>CLI de NFS-e Nacional para humanos e agentes que rodam shell.</description>
 
+    <!-- Aplicacao (fat jar): nao e publicada no Maven Central. -->
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
+        <maven.source.skip>true</maven.source.skip>
+        <gpg.skip>true</gpg.skip>
+    </properties>
+
     <dependencies>
         <dependency>
-            <groupId>br.com.nfse</groupId>
+            <groupId>io.github.rafael-matos-dev</groupId>
             <artifactId>nfse-sdk</artifactId>
         </dependency>
         <dependency>
