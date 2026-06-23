@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/rafael-matos-dev/nfse-java-mcp/schemas/emitir-nfse.request.schema.json",
+  "title": "EmitirNfseRequest",
+  "description": "Payload de emissao de NFS-e Nacional usado pelas ferramentas emitir (CLI/MCP/SDK).",
+  "type": "object",
+  "required": ["codigoMunicipio", "numero", "valorServico", "tomador", "servico", "tributacao"],
+  "properties": {
+    "versaoDps": {"type": "string", "default": "1.00"},
+    "codigoMunicipio": {"type": "string", "pattern": "^[0-9]{7}$"},
+    "serie": {"type": "string", "default": "1", "maxLength": 5},
+    "numero": {"type": "integer", "minimum": 0},
+    "dataCompetencia": {"type": "string", "format": "date"},
+    "valorServico": {"type": "number", "exclusiveMinimum": 0},
+    "prestador": {
+      "type": "object",
+      "properties": {
+        "cnpj": {"type": "string"},
+        "cpf": {"type": "string"},
+        "inscricaoMunicipal": {"type": "string"},
+        "telefone": {"type": "string"},
+        "email": {"type": "string", "format": "email"},
+        "opcaoSimplesNacional": {"type": "integer", "default": 2},
+        "regimeApuracaoSimplesNacional": {"type": "integer"},
+        "regimeEspecialTributacao": {"type": "integer", "default": 0}
+      },
+      "additionalProperties": false
+    },
+    "tomador": {
+      "type": "object",
+      "required": ["nome"],
+      "description": "Endereco e opcional (ex.: tomador pessoa fisica por CPF).",
+      "properties": {
+        "cnpj": {"type": "string"},
+        "cpf": {"type": "string"},
+        "nome": {"type": "string"},
+        "codigoMunicipio": {"type": "string", "pattern": "^[0-9]{7}$"},
+        "cep": {"type": "string"},
+        "logradouro": {"type": "string"},
+        "numero": {"type": "string"},
+        "complemento": {"type": "string"},
+        "bairro": {"type": "string"},
+        "telefone": {"type": "string"},
+        "email": {"type": "string", "format": "email"}
+      },
+      "additionalProperties": false
+    },
+    "servico": {
+      "type": "object",
+      "required": ["codigoTributacaoNacional", "descricao"],
+      "properties": {
+        "codigoLocalPrestacao": {"type": "string", "pattern": "^[0-9]{7}$"},
+        "codigoTributacaoNacional": {"type": "string"},
+        "codigoTributacaoMunicipal": {"type": "string"},
+        "descricao": {"type": "string"},
+        "codigoNbs": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "tributacao": {
+      "type": "object",
+      "required": ["tributacaoIssqn", "tipoRetencaoIssqn"],
+      "description": "Informe indicadorTotalTributos (ex.: MEI) OU percentualTotalTributosSimplesNacional (ME/EPP).",
+      "properties": {
+        "tributacaoIssqn": {"type": "integer", "default": 1},
+        "tipoRetencaoIssqn": {"type": "integer", "default": 1},
+        "indicadorTotalTributos": {"type": "integer"},
+        "percentualTotalTributosSimplesNacional": {"type": "number"}
+      },
+      "oneOf": [
+        {"required": ["indicadorTotalTributos"]},
+        {"required": ["percentualTotalTributosSimplesNacional"]}
+      ],
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,26 @@
+{
+  "codigoMunicipio": "3550308",
+  "serie": "00900",
+  "numero": 1,
+  "dataCompetencia": "2026-01-15",
+  "valorServico": 250.00,
+  "prestador": {
+    "cnpj": "11222333000181",
+    "opcaoSimplesNacional": 3,
+    "regimeApuracaoSimplesNacional": 1,
+    "regimeEspecialTributacao": 0
+  },
+  "tomador": {
+    "cpf": "11144477735",
+    "nome": "FULANO DE TAL"
+  },
+  "servico": {
+    "codigoTributacaoNacional": "010101",
+    "descricao": "Servico de teste em homologacao"
+  },
+  "tributacao": {
+    "tributacaoIssqn": 1,
+    "tipoRetencaoIssqn": 1,
+    "percentualTotalTributosSimplesNacional": 6.00
+  }
+}

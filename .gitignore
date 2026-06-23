@@ -1,0 +1,22 @@
+# Build
+target/
+*.class
+dependency-reduced-pom.xml
+
+# Segredos e certificados — NUNCA commitar
+.env
+*.pfx
+*.p12
+certificados/
+Certificados/
+
+# XMLs de notas emitidas (contêm dados reais de contribuinte)
+nfse-success-xml/
+*-success-xml/
+
+# IDE / OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+*.log

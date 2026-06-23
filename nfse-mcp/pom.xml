@@ -1,0 +1,60 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>br.com.nfse</groupId>
+        <artifactId>nfse-java-mcp</artifactId>
+        <version>0.1.0</version>
+    </parent>
+
+    <artifactId>nfse-mcp</artifactId>
+    <name>nfse-mcp</name>
+    <description>Servidor MCP (stdio) que expoe a emissao de NFS-e Nacional para agentes de IA.</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>br.com.nfse</groupId>
+            <artifactId>nfse-sdk</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.modelcontextprotocol.sdk</groupId>
+            <artifactId>mcp</artifactId>
+        </dependency>
+        <!-- O MCP SDK 1.0.2 traz Jackson 3 (tools.jackson). Nao misturar com Jackson 2 aqui:
+             as jackson-annotations 2.x sombreiam as 3.x e quebram o parsing de schema. Para
+             converter/serializar usamos o proprio McpJsonMapper do SDK. -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>nfse-mcp</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>br.com.nfse.mcp.NfseMcpServer</mainClass>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
