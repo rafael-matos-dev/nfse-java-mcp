@@ -5,18 +5,22 @@ e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+## [0.4.1] - 2026-06-24
+
+### Adicionado
+- DANFSe: descrição do **Código de Tributação Municipal** (`xTribMun`) e o **NBS** (`cNBS`/`xNBS`),
+  que vêm no XML mas não eram exibidos; rótulos do documento com **acentuação** correta.
+- **Resolução do nome do município** dos endereços: usa os pares código→nome do próprio XML
+  (prestador/emissão) e, para municípios de fora (ex.: tomador em outra cidade), consulta a **API do
+  IBGE** (cache em memória, timeout curto, *fallback* gracioso ao código; desative com
+  `-Dnfse.danfse.ibge=false`).
+
 ## [0.4.0] - 2026-06-23
 
 ### Adicionado
 - DANFSe muito mais próximo do oficial: **logo oficial da NFS-e** no cabeçalho (CC BY-ND, ver
   `nfse-danfse/NOTICE.md`), aviso **"NFS-e SEM VALIDADE JURÍDICA"** em vermelho quando a nota é de
   homologação (lê `ambGer`/`tpAmb` do XML), cabeçalho em 3 colunas e layout mais compacto.
-- Descrição do **Código de Tributação Municipal** (`xTribMun`) e do **NBS** (`cNBS`/`xNBS`), que vêm
-  no XML mas não eram exibidos; rótulos do documento com **acentuação** correta.
-- **Resolução do nome do município** dos endereços: usa os pares código→nome do próprio XML
-  (prestador/emissão) e, para municípios de fora (ex.: tomador em outra cidade), consulta a **API do
-  IBGE** (cache em memória, timeout curto, *fallback* gracioso ao código; desative com
-  `-Dnfse.danfse.ibge=false`).
 - `DanfseConfig` — identificação opcional do município (brasão + contato da prefeitura), já que esses
   dados não vêm no XML nem há API pública que os forneça. `DanfseGenerator.gerarPdf(xml, producao, config[, saida])`.
 
@@ -64,7 +68,8 @@ e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
 - `nfse-cli` — CLI para humanos e agentes que rodam shell.
 - Homologação por padrão; produção exige confirmação explícita.
 
-[Não lançado]: https://github.com/rafael-matos-dev/nfse-java-mcp/compare/v0.4.0...HEAD
+[Não lançado]: https://github.com/rafael-matos-dev/nfse-java-mcp/compare/v0.4.1...HEAD
+[0.4.1]: https://github.com/rafael-matos-dev/nfse-java-mcp/releases/tag/v0.4.1
 [0.4.0]: https://github.com/rafael-matos-dev/nfse-java-mcp/releases/tag/v0.4.0
 [0.3.0]: https://github.com/rafael-matos-dev/nfse-java-mcp/releases/tag/v0.3.0
 [0.2.0]: https://github.com/rafael-matos-dev/nfse-java-mcp/releases/tag/v0.2.0
