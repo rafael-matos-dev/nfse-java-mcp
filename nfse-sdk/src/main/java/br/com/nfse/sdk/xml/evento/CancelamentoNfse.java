@@ -46,7 +46,12 @@ public record CancelamentoNfse(
     }
 
     public String idPedidoRegistroEvento() {
-        return "PRE" + chaveAcesso + TIPO_EVENTO + "%03d".formatted(numeroPedido);
+        // A partir de jan/2026 o nPedRegEvento foi REMOVIDO do Id do pedido de evento.
+        // TSIdPedRegEvt agora exige pattern "PRE[0-9]{56}" (maxLength 59): "PRE" + chave de
+        // acesso (50) + tipo do evento (6). Anexar o numeroPedido gerava 62 chars e era rejeitado
+        // pela SEFIN com E1235 (falha no esquema XML). numeroPedido permanece no record por
+        // compatibilidade de API, mas nao compoe mais o Id.
+        return "PRE" + chaveAcesso + TIPO_EVENTO;
     }
 
     public boolean autorPessoaJuridica() {

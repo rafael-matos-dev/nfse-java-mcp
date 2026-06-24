@@ -122,7 +122,7 @@ Disponível no Maven Central:
 <dependency>
   <groupId>io.github.rafael-matos-dev</groupId>
   <artifactId>nfse-sdk</artifactId>
-  <version>0.3.0</version>
+  <version>0.4.0</version>
 </dependency>
 ```
 
@@ -156,7 +156,14 @@ byte[] pdf = DanfseGenerator.gerarPdf(nfseXml, /* producao */ false, Path.of("da
 CLI: `java -jar nfse-cli.jar danfse --xml nota.xml --saida danfse.pdf`
 MCP: ferramenta `gerar_danfse` (aceita o XML, um arquivo, ou o `nfseXmlGZipB64`).
 
-O layout segue o padrão nacional (NT 008) e renderiza a seção **IBS/CBS** (NT 009) quando presente no XML. Render via HTML/CSS → PDF (OpenHTMLtoPDF) + QR Code (ZXing). Limitações conhecidas: o logo oficial da NFS-e e o bloco de contato da prefeitura (dados de cadastro municipal, ausentes no XML) não são reproduzidos.
+O layout segue o padrão nacional (NT 008): logo oficial da NFS-e, aviso **"NFS-e SEM VALIDADE JURÍDICA"** em homologação, e a seção **IBS/CBS** (NT 009) quando presente no XML. Render via HTML/CSS → PDF (OpenHTMLtoPDF) + QR Code (ZXing).
+
+O brasão e o contato da prefeitura não vêm no XML (e não há API pública que os forneça); são opcionais via `DanfseConfig`:
+
+```java
+var cfg = new DanfseConfig("Belo Horizonte", brasaoDataUri, "Secretaria de Fazenda", "(31) 3000-0000", "nfse@pbh.gov.br");
+byte[] pdf = DanfseGenerator.gerarPdf(nfseXml, false, cfg, Path.of("danfse.pdf"));
+```
 
 ## Ambientes e segurança
 
@@ -166,7 +173,7 @@ O layout segue o padrão nacional (NT 008) e renderiza a seção **IBS/CBS** (NT
 
 ## Limitações
 
-- DANFSe: o logo oficial da NFS-e e o bloco de contato da prefeitura não são reproduzidos (asset/cadastro municipal ausentes no XML); a seção IBS/CBS é "best-effort" até haver nota real com reforma para validar.
+- DANFSe: o brasão e o contato da prefeitura dependem de `DanfseConfig` (não há API pública para obtê-los); a seção IBS/CBS é "best-effort" até haver nota real com reforma para validar.
 - Geração de classes JAXB a partir dos XSDs oficiais e endurecimento de validações: próximos passos.
 
 ## Licença

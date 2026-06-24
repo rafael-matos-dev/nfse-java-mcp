@@ -11,6 +11,7 @@ import java.time.OffsetDateTime;
  */
 public record Danfse(
     String chaveAcesso,
+    boolean homologacao,
     Identificacao identificacao,
     Pessoa prestador,
     Pessoa tomador,

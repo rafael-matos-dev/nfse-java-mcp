@@ -99,7 +99,8 @@ class ContribuinteServiceTest {
 
             String payload = extractJsonValue(requestBody(exchange), "pedidoRegistroEventoXmlGZipB64");
             String signedXml = XmlPayloadCodec.ungzipBase64(payload);
-            assertTrue(signedXml.contains("<infPedReg Id=\"PRENFSE123101101001\">"));
+            // jan/2026: nPedRegEvento removido do Id (TSIdPedRegEvt: PRE[0-9]{56}) — sem o sufixo "001".
+            assertTrue(signedXml.contains("<infPedReg Id=\"PRENFSE123101101\">"));
             assertTrue(signedXml.contains("<tpAmb>2</tpAmb>"));
             assertTrue(signedXml.contains("<CNPJAutor>12345678000195</CNPJAutor>"));
             assertTrue(signedXml.contains("<e101101><xDesc>Cancelamento de NFS-e</xDesc>"));

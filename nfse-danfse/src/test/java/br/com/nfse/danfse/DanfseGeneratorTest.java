@@ -36,6 +36,18 @@ class DanfseGeneratorTest {
         assertTrue(texto.contains("R$ 250,00"), "tem o valor formatado");
         assertTrue(texto.contains("12.345.678/0001-99"), "CNPJ mascarado");
         assertTrue(texto.contains("111.444.777-35"), "CPF mascarado");
+        // XML ficticio e homologacao (ambGer=2) -> aviso obrigatorio
+        assertTrue(texto.contains("SEM VALIDADE JURIDICA"), "aviso de homologacao");
+    }
+
+    @Test
+    void producaoNaoMostraAvisoDeHomologacao() throws Exception {
+        String prod = NfseXmlReaderTest.xmlExemplo().replace("<ambGer>2</ambGer>", "<ambGer>1</ambGer>");
+        byte[] pdf = DanfseGenerator.gerarPdf(prod, true);
+        try (PDDocument doc = PDDocument.load(new ByteArrayInputStream(pdf))) {
+            String texto = new PDFTextStripper().getText(doc);
+            assertTrue(!texto.contains("SEM VALIDADE"), "producao nao deve ter aviso de homologacao");
+        }
     }
 
     @Test

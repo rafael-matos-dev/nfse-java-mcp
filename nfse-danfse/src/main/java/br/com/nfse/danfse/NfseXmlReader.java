@@ -39,6 +39,7 @@ public final class NfseXmlReader {
 
             return new Danfse(
                 chaveAcesso(infNfse),
+                homologacao(infNfse, dps),
                 identificacao(infNfse, dps),
                 prestador(emit, prest),
                 tomador(toma),
@@ -52,6 +53,15 @@ public final class NfseXmlReader {
         } catch (Exception exception) {
             throw new DanfseException("Nao foi possivel ler o XML da NFS-e.", exception);
         }
+    }
+
+    // ambGer (NFS-e) ou tpAmb (DPS): 2 = homologacao/producao restrita, 1 = producao.
+    private static boolean homologacao(Element infNfse, Element dps) {
+        String amb = text(infNfse, "ambGer");
+        if (amb == null) {
+            amb = text(dps, "tpAmb");
+        }
+        return "2".equals(amb);
     }
 
     private static String chaveAcesso(Element infNfse) {

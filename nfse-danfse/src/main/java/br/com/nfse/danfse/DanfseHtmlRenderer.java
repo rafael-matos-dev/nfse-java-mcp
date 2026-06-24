@@ -25,13 +25,17 @@ public final class DanfseHtmlRenderer {
     }
 
     public static String render(Danfse d, String qrDataUri) {
+        return render(d, qrDataUri, null, DanfseConfig.vazio());
+    }
+
+    public static String render(Danfse d, String qrDataUri, String logoDataUri, DanfseConfig config) {
+        DanfseConfig cfg = config == null ? DanfseConfig.vazio() : config;
         StringBuilder h = new StringBuilder(8192);
         h.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
         h.append("<html xmlns=\"http://www.w3.org/1999/xhtml\"><head><meta charset=\"UTF-8\"/>");
         h.append("<style>").append(css()).append("</style></head><body>");
 
-        cabecalho(h, d);
-        chaveEQr(h, d, qrDataUri);
+        cabecalho(h, d, qrDataUri, logoDataUri, cfg);
         identificacao(h, d.identificacao());
         pessoa(h, "PRESTADOR DO SERVICO", "EMITENTE DA NFS-e", d.prestador(), true);
         pessoa(h, "TOMADOR DO SERVICO", "TOMADOR DO SERVICO", d.tomador(), false);
@@ -50,26 +54,59 @@ public final class DanfseHtmlRenderer {
         return h.toString();
     }
 
-    private static void cabecalho(StringBuilder h, Danfse d) {
-        h.append("<table class=\"hdr\"><tr>")
-            .append("<td class=\"hdr-l\"><div class=\"danfse-tit\">DANFSe</div>")
-            .append("<div class=\"danfse-sub\">Documento Auxiliar da NFS-e</div></td>")
-            .append("<td class=\"hdr-c\"><div class=\"mun\">")
-            .append(esc(municipio(d))).append("</div></td>")
-            .append("<td class=\"hdr-r\"><div class=\"sml\">A autenticidade desta NFS-e pode ser verificada ")
-            .append("pela leitura do codigo QR ou pela consulta da chave de acesso no portal nacional da NFS-e.</div></td>")
-            .append("</tr></table>");
-    }
+    private static void cabecalho(StringBuilder h, Danfse d, String qrDataUri, String logoDataUri, DanfseConfig cfg) {
+        // Topo em 3 colunas: logo NFS-e | titulo + municipio + aviso de ambiente | QR
+        h.append("<table class=\"hdr\"><tr>");
 
-    private static void chaveEQr(StringBuilder h, Danfse d, String qrDataUri) {
+        h.append("<td class=\"hdr-l\">");
+        if (logoDataUri != null) {
+            h.append("<img class=\"logo\" src=\"").append(logoDataUri).append("\" alt=\"NFS-e\"/>");
+        } else {
+            h.append("<div class=\"danfse-tit\">NFS-e</div>");
+        }
+        h.append("</td>");
+
+        h.append("<td class=\"hdr-c\">")
+            .append("<div class=\"danfse-tit\">DANFSe v1.0</div>")
+            .append("<div class=\"danfse-sub\">Documento Auxiliar da NFS-e</div>");
+        municipioHeader(h, d, cfg);
+        if (d.homologacao()) {
+            h.append("<div class=\"aviso\">NFS-e SEM VALIDADE JURIDICA</div>");
+        }
+        h.append("</td>");
+
+        h.append("<td class=\"hdr-r\">");
+        if (qrDataUri != null) {
+            h.append("<img src=\"").append(qrDataUri).append("\" width=\"86\" height=\"86\" alt=\"QR\"/>");
+        }
+        h.append("<div class=\"sml\">Consulte pela chave de acesso ou pelo QR no portal nacional da NFS-e.</div>")
+            .append("</td>");
+
+        h.append("</tr></table>");
+
+        // Barra da chave de acesso
         h.append("<table class=\"grid\"><tr>")
             .append("<td class=\"k\"><div class=\"lbl\">Chave de Acesso da NFS-e</div>")
             .append("<div class=\"chave\">").append(esc(dash(d.chaveAcesso()))).append("</div></td>")
-            .append("<td class=\"qr\">");
-        if (qrDataUri != null) {
-            h.append("<img src=\"").append(qrDataUri).append("\" width=\"90\" height=\"90\" alt=\"QR\"/>");
+            .append("</tr></table>");
+    }
+
+    private static void municipioHeader(StringBuilder h, Danfse d, DanfseConfig cfg) {
+        String nome = cfg.municipioNome() != null && !cfg.municipioNome().isBlank()
+            ? cfg.municipioNome()
+            : municipio(d);
+        h.append("<div class=\"mun\">");
+        if (cfg.temBrasao()) {
+            h.append("<img class=\"brasao\" src=\"").append(cfg.brasaoDataUri()).append("\" alt=\"\"/>");
         }
-        h.append("</td></tr></table>");
+        h.append(esc(dash(nome))).append("</div>");
+        if (cfg.temContato()) {
+            StringBuilder c = new StringBuilder();
+            juntar(c, cfg.departamento());
+            juntar(c, cfg.telefone());
+            juntar(c, cfg.email());
+            h.append("<div class=\"sml\">").append(esc(c.toString())).append("</div>");
+        }
     }
 
     private static void identificacao(StringBuilder h, Danfse.Identificacao id) {
@@ -352,27 +389,32 @@ public final class DanfseHtmlRenderer {
 
     private static String css() {
         return """
-            @page { size: A4 portrait; margin: 10mm; }
+            @page { size: A4 portrait; margin: 8mm; }
             * { box-sizing: border-box; }
-            body { font-family: 'Helvetica', sans-serif; font-size: 7pt; color: #000; }
+            body { font-family: Arial, 'Helvetica', sans-serif; font-size: 7pt; color: #000; }
             table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-            .hdr td { border: 0.5pt solid #000; padding: 3pt; vertical-align: middle; }
-            .hdr-l { width: 33%; } .hdr-c { width: 34%; text-align: center; } .hdr-r { width: 33%; }
-            .danfse-tit { font-size: 14pt; font-weight: bold; }
-            .danfse-sub { font-size: 8pt; }
-            .mun { font-size: 9pt; font-weight: bold; }
-            .sml { font-size: 6pt; }
-            .grid { margin-top: -0.5pt; }
-            .grid td { border: 0.5pt solid #000; padding: 2pt 3pt; vertical-align: top; }
-            .lbl { font-size: 5.5pt; color: #333; }
-            .val { font-size: 7.5pt; font-weight: bold; min-height: 9pt; }
-            .chave { font-size: 9pt; font-weight: bold; letter-spacing: 0.3pt; }
-            .qr { width: 96pt; text-align: center; vertical-align: middle; }
-            .k { vertical-align: middle; }
-            .band { background: #e9e9e9; border: 0.5pt solid #000; margin-top: -0.5pt;
-                    font-size: 7pt; font-weight: bold; padding: 2pt 3pt; }
+            .hdr td { border: 0.6pt solid #000; padding: 3pt 4pt; vertical-align: middle; }
+            .hdr-l { width: 30%; text-align: center; }
+            .hdr-c { width: 46%; text-align: center; }
+            .hdr-r { width: 24%; text-align: center; }
+            .logo { max-width: 96%; max-height: 46pt; }
+            .brasao { max-height: 18pt; vertical-align: middle; margin-right: 3pt; }
+            .danfse-tit { font-size: 13pt; font-weight: bold; }
+            .danfse-sub { font-size: 7.5pt; }
+            .mun { font-size: 8.5pt; font-weight: bold; margin-top: 2pt; }
+            .aviso { color: #cc0000; font-size: 8.5pt; font-weight: bold; margin-top: 2pt; }
+            .sml { font-size: 5.5pt; color: #333; margin-top: 1pt; }
+            .grid { margin-top: -0.6pt; }
+            .grid td { border: 0.6pt solid #000; padding: 1.5pt 4pt; vertical-align: top; }
+            .lbl { font-size: 5.2pt; color: #444; line-height: 1.05; }
+            .val { font-size: 7.5pt; font-weight: bold; line-height: 1.1; min-height: 8.5pt; }
+            .chave { font-size: 9.5pt; font-weight: bold; letter-spacing: 0.4pt; }
+            .k { vertical-align: middle; text-align: center; }
+            .k .lbl { text-align: left; }
+            .band { background: #c9c9c9; border: 0.6pt solid #000; margin-top: -0.6pt;
+                    font-size: 7pt; font-weight: bold; padding: 1.5pt 4pt; }
             .band.center { text-align: center; }
-            .free { min-height: 40pt; vertical-align: top; padding: 4pt; }
+            .free { min-height: 34pt; vertical-align: top; padding: 4pt; }
             """;
     }
 }

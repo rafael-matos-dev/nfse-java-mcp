@@ -71,6 +71,15 @@ class NfseXmlReaderTest {
     }
 
     @Test
+    void detectaHomologacaoPeloAmbGer() throws Exception {
+        // o XML ficticio tem ambGer=2 (homologacao)
+        assertTrue(NfseXmlReader.read(xmlExemplo()).homologacao());
+        // ambGer=1 => producao
+        String prod = xmlExemplo().replace("<ambGer>2</ambGer>", "<ambGer>1</ambGer>");
+        assertTrue(!NfseXmlReader.read(prod).homologacao());
+    }
+
+    @Test
     void xmlSemInfNFSeFalha() {
         assertThrows(DanfseException.class, () -> NfseXmlReader.read("<NFSe></NFSe>"));
     }
