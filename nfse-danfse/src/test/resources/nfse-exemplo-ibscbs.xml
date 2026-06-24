@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<NFSe versao="1.01" xmlns="http://www.sped.fazenda.gov.br/nfse">
+  <infNFSe Id="NFS35503082212345678000199000000000009999900000000000002">
+    <xLocEmi>Sao Paulo</xLocEmi>
+    <xLocPrestacao>Sao Paulo</xLocPrestacao>
+    <nNFSe>99999</nNFSe>
+    <cLocIncid>3550308</cLocIncid>
+    <xLocIncid>Sao Paulo</xLocIncid>
+    <xTribNac>Servico de teste com reforma tributaria.</xTribNac>
+    <verAplic>nfse-java-mcp</verAplic>
+    <ambGer>2</ambGer>
+    <tpEmis>1</tpEmis>
+    <procEmi>2</procEmi>
+    <cStat>107</cStat>
+    <dhProc>2026-06-23T16:00:00-03:00</dhProc>
+    <nDFSe>123456</nDFSe>
+    <emit>
+      <CNPJ>12345678000199</CNPJ>
+      <IM>1234567890</IM>
+      <xNome>EMPRESA EXEMPLO LTDA</xNome>
+      <enderNac>
+        <xLgr>Rua das Flores</xLgr>
+        <nro>100</nro>
+        <xBairro>Centro</xBairro>
+        <cMun>3550308</cMun>
+        <UF>SP</UF>
+        <CEP>01000000</CEP>
+      </enderNac>
+    </emit>
+    <valores>
+      <vLiq>1000.00</vLiq>
+    </valores>
+    <IBSCBS>
+      <cLocalidadeIncid>3550308</cLocalidadeIncid>
+      <xLocalidadeIncid>Sao Paulo</xLocalidadeIncid>
+      <pRedutor>0.00</pRedutor>
+      <totCIBS>
+        <totIBS>
+          <vIBSTot>88.50</vIBSTot>
+        </totIBS>
+        <totCBS>
+          <vCBS>91.50</vCBS>
+        </totCBS>
+      </totCIBS>
+    </IBSCBS>
+    <DPS versao="1.01" xmlns="http://www.sped.fazenda.gov.br/nfse">
+      <infDPS Id="DPS3550308212345678000199009000000000009999">
+        <tpAmb>2</tpAmb>
+        <dhEmi>2026-06-23T15:59:00-03:00</dhEmi>
+        <verAplic>nfse-java-mcp</verAplic>
+        <serie>00900</serie>
+        <nDPS>9999</nDPS>
+        <dCompet>2026-06-23</dCompet>
+        <tpEmit>1</tpEmit>
+        <cLocEmi>3550308</cLocEmi>
+        <prest>
+          <CNPJ>12345678000199</CNPJ>
+          <regTrib>
+            <opSimpNac>1</opSimpNac>
+            <regEspTrib>0</regEspTrib>
+          </regTrib>
+        </prest>
+        <toma>
+          <CNPJ>98765432000188</CNPJ>
+          <xNome>CLIENTE EXEMPLO SA</xNome>
+        </toma>
+        <serv>
+          <locPrest>
+            <cLocPrestacao>3550308</cLocPrestacao>
+          </locPrest>
+          <cServ>
+            <cTribNac>010101</cTribNac>
+            <xDescServ>Servico com IBS e CBS</xDescServ>
+          </cServ>
+        </serv>
+        <valores>
+          <vServPrest>
+            <vServ>1000.00</vServ>
+          </vServPrest>
+          <trib>
+            <tribMun>
+              <tribISSQN>1</tribISSQN>
+              <tpRetISSQN>1</tpRetISSQN>
+            </tribMun>
+          </trib>
+        </valores>
+      </infDPS>
+    </DPS>
+  </infNFSe>
+</NFSe>

@@ -27,14 +27,19 @@ O `nfse-sdk` é o motor. O `nfse-mcp` e o `nfse-cli` são camadas finas por cima
   └─────┬─────┘         └─────┬─────┘                 │
         └──────────┬──────────┴─────────────────────-┘
                    │
-            ┌──────▼──────┐
-            │  nfse-sdk   │   ← o motor (Maven Central, zero-dep)
-            └─────────────┘
+       ┌───────────┴───────────┐
+       │                       │
+┌──────▼──────┐        ┌───────▼───────┐
+│  nfse-sdk   │        │  nfse-danfse  │  ← gera o PDF do DANFSe local
+│  (zero-dep) │        │  (HTML→PDF)   │
+└─────────────┘        └───────────────┘
+   ↑ Maven Central
 ```
 
 | Módulo | O que é | Para quem | Distribuição |
 |--------|---------|-----------|--------------|
-| **`nfse-sdk`** | a biblioteca/motor | devs que integram em Java | Maven Central |
+| **`nfse-sdk`** | a biblioteca/motor (emissão, consulta, cancelamento) | devs que integram em Java | Maven Central |
+| **`nfse-danfse`** | gera o PDF do DANFSe localmente a partir do XML | devs / MCP / CLI | Maven Central |
 | **`nfse-mcp`** | servidor MCP sobre o SDK | agentes de IA | jar no GitHub Releases |
 | **`nfse-cli`** | CLI sobre o SDK | humanos e scripts | jar no GitHub Releases |
 
@@ -88,7 +93,8 @@ Depois, é só conversar com o agente: _"Emita uma NFS-e de R$ 100 para o CPF 11
 | `emitir_de_exemplo` | Reaproveita uma nota anterior (XML), trocando só tomador/descrição/valor. |
 | `consultar_nfse` | Consulta uma NFS-e pela chave de acesso. |
 | `cancelar_nfse` | Cancela uma NFS-e (evento 101101). |
-| `baixar_danfse` | Baixa o DANFSe/PDF. |
+| `gerar_danfse` | **Gera o PDF do DANFSe localmente** a partir do XML da NFS-e. |
+| `baixar_danfse` | Baixa o DANFSe/PDF da API oficial *(legado — ver abaixo)*. |
 
 Todas aceitam `ambiente` (`homologacao` por padrão) e, nas operações de escrita, `confirmarProducao` (obrigatório `true` para produção). O certificado vem das envs `NFSE_CERT_PATH`/`NFSE_CERT_PASSWORD` ou dos parâmetros da ferramenta.
 
@@ -116,7 +122,7 @@ Disponível no Maven Central:
 <dependency>
   <groupId>io.github.rafael-matos-dev</groupId>
   <artifactId>nfse-sdk</artifactId>
-  <version>0.2.0</version>
+  <version>0.3.0</version>
 </dependency>
 ```
 
@@ -136,6 +142,22 @@ O `nfse-sdk` não tem dependências de runtime (HTTP via `java.net.http`, assina
 
 O fluxo mais simples para quem já emite: aponte uma nota anterior (XML de DPS ou NFS-e) e troque só o que muda. O `DpsXmlReader` lê o exemplo, o `DpsReemissao` aplica os overrides (novo número, tomador, descrição, valor) e regenera o `Id` da DPS.
 
+## DANFSe (PDF) — geração local
+
+> ⚠️ **A API oficial de download do DANFSe será desligada em 1º/07/2026** (Nota Técnica SE/CGNFS-e nº 008/2026). A partir dessa data, cada emissor gera o DANFSe localmente a partir do XML autorizado da NFS-e. Este projeto já faz isso.
+
+O módulo `nfse-danfse` gera o PDF do DANFSe **localmente** a partir do XML da NFS-e (o `<NFSe>` que a SEFIN devolve na emissão, no campo `nfseXmlGZipB64`). Não depende da API que será descontinuada.
+
+```java
+// XML autorizado da NFS-e (string)
+byte[] pdf = DanfseGenerator.gerarPdf(nfseXml, /* producao */ false, Path.of("danfse.pdf"));
+```
+
+CLI: `java -jar nfse-cli.jar danfse --xml nota.xml --saida danfse.pdf`
+MCP: ferramenta `gerar_danfse` (aceita o XML, um arquivo, ou o `nfseXmlGZipB64`).
+
+O layout segue o padrão nacional (NT 008) e renderiza a seção **IBS/CBS** (NT 009) quando presente no XML. Render via HTML/CSS → PDF (OpenHTMLtoPDF) + QR Code (ZXing). Limitações conhecidas: o logo oficial da NFS-e e o bloco de contato da prefeitura (dados de cadastro municipal, ausentes no XML) não são reproduzidos.
+
 ## Ambientes e segurança
 
 - **Homologação é o padrão.** Use para testar à vontade.
@@ -144,9 +166,11 @@ O fluxo mais simples para quem já emite: aponte uma nota anterior (XML de DPS o
 
 ## Limitações
 
-- A API oficial de download do DANFSe está prevista para ser desligada em **2026-07-01**; depois disso o PDF precisará ser gerado localmente (candidato a uma próxima versão).
+- DANFSe: o logo oficial da NFS-e e o bloco de contato da prefeitura não são reproduzidos (asset/cadastro municipal ausentes no XML); a seção IBS/CBS é "best-effort" até haver nota real com reforma para validar.
 - Geração de classes JAXB a partir dos XSDs oficiais e endurecimento de validações: próximos passos.
 
 ## Licença
 
 [MIT](LICENSE) © Rafael Matos
+
+O `nfse-sdk` é zero-dependências. O `nfse-danfse` depende de **OpenHTMLtoPDF** (LGPL-2.1), **Apache PDFBox** (Apache-2.0) e **ZXing** (Apache-2.0) — todas dependências de runtime, sem afetar a licença MIT deste código.

@@ -14,6 +14,11 @@ Certificados/
 nfse-success-xml/
 *-success-xml/
 
+# DANFSe e notas geradas/baixadas (podem conter dados reais).
+# PDFs nunca sao commitados. XMLs reais ficam fora do repo ou nos diretorios acima;
+# fixtures de teste sao FICTICIOS e versionados em src/test/resources.
+*.pdf
+
 # IDE / OS
 .idea/
 .vscode/

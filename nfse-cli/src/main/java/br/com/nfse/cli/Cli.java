@@ -46,6 +46,7 @@ public final class Cli {
                 case "consultar" -> consultar(a);
                 case "cancelar" -> cancelar(a);
                 case "pdf" -> pdf(a);
+                case "danfse" -> danfse(a);
                 case "help", "-h", "--help" -> usage();
                 default -> {
                     System.err.println("Comando desconhecido: " + command);
@@ -106,6 +107,18 @@ public final class Cli {
         String chave = a.required("chave");
         Path saida = Path.of(a.getOr("saida", "danfse-" + chave + ".pdf"));
         emit(a, NfseRunner.baixarPdf(chave, saida, a.ambiente(), certificado(a)));
+    }
+
+    // Gera o DANFSe localmente a partir do XML autorizado da NFS-e (nao baixa da API oficial).
+    private static void danfse(Args a) throws Exception {
+        String xml = Files.readString(Path.of(a.required("xml")));
+        Path saida = Path.of(a.getOr("saida", "danfse.pdf"));
+        boolean producao = a.ambiente() == Ambiente.PRODUCAO;
+        byte[] pdf = br.com.nfse.danfse.DanfseGenerator.gerarPdf(xml, producao, saida);
+        emit(a, java.util.Map.of(
+            "sucesso", true,
+            "caminho", saida.toAbsolutePath().normalize().toString(),
+            "bytes", pdf.length));
     }
 
     private static Dps.Tomador tomadorOverride(Args a) {
@@ -170,7 +183,9 @@ public final class Cli {
               consultar --chave CHAVE       Consulta uma NFS-e pela chave de acesso.
               cancelar --chave CHAVE --motivo-codigo C --motivo-descricao D
                                             Cancela uma NFS-e (evento 101101).
-              pdf --chave CHAVE [--saida arq.pdf]   Baixa o DANFSe/PDF.
+              pdf --chave CHAVE [--saida arq.pdf]   Baixa o DANFSe/PDF da API oficial (legado, ate 2026-07-01).
+              danfse --xml nota.xml [--saida arq.pdf]
+                                            Gera o DANFSe/PDF localmente a partir do XML da NFS-e.
 
             Opcoes comuns:
               --ambiente homologacao|producao   Padrao: homologacao.

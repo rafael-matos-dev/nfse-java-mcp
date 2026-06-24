@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<NFSe versao="1.01" xmlns="http://www.sped.fazenda.gov.br/nfse">
+  <infNFSe Id="NFS35503082212345678000199000000000001234500000000000001">
+    <xLocEmi>Sao Paulo</xLocEmi>
+    <xLocPrestacao>Sao Paulo</xLocPrestacao>
+    <nNFSe>12345</nNFSe>
+    <cLocIncid>3550308</cLocIncid>
+    <xLocIncid>Sao Paulo</xLocIncid>
+    <xTribNac>Servico de teste ficticio.</xTribNac>
+    <verAplic>nfse-java-mcp</verAplic>
+    <ambGer>2</ambGer>
+    <tpEmis>1</tpEmis>
+    <procEmi>2</procEmi>
+    <cStat>107</cStat>
+    <dhProc>2026-06-23T14:30:00-03:00</dhProc>
+    <nDFSe>999999</nDFSe>
+    <emit>
+      <CNPJ>12345678000199</CNPJ>
+      <IM>1234567890</IM>
+      <xNome>EMPRESA EXEMPLO LTDA</xNome>
+      <enderNac>
+        <xLgr>Rua das Flores</xLgr>
+        <nro>100</nro>
+        <xCpl>Sala 5</xCpl>
+        <xBairro>Centro</xBairro>
+        <cMun>3550308</cMun>
+        <UF>SP</UF>
+        <CEP>01000000</CEP>
+      </enderNac>
+      <fone>1133334444</fone>
+      <email>contato@empresaexemplo.com.br</email>
+    </emit>
+    <valores>
+      <vLiq>250.00</vLiq>
+    </valores>
+    <DPS versao="1.01" xmlns="http://www.sped.fazenda.gov.br/nfse">
+      <infDPS Id="DPS3550308212345678000199009000000000001234">
+        <tpAmb>2</tpAmb>
+        <dhEmi>2026-06-23T14:29:00-03:00</dhEmi>
+        <verAplic>nfse-java-mcp</verAplic>
+        <serie>00900</serie>
+        <nDPS>1234</nDPS>
+        <dCompet>2026-06-23</dCompet>
+        <tpEmit>1</tpEmit>
+        <cLocEmi>3550308</cLocEmi>
+        <prest>
+          <CNPJ>12345678000199</CNPJ>
+          <IM>1234567890</IM>
+          <regTrib>
+            <opSimpNac>3</opSimpNac>
+            <regApTribSN>1</regApTribSN>
+            <regEspTrib>0</regEspTrib>
+          </regTrib>
+        </prest>
+        <toma>
+          <CPF>11144477735</CPF>
+          <xNome>Fulano de Tal</xNome>
+          <end>
+            <endNac>
+              <cMun>3550308</cMun>
+              <CEP>01001000</CEP>
+            </endNac>
+            <xLgr>Avenida Central</xLgr>
+            <nro>200</nro>
+            <xBairro>Se</xBairro>
+          </end>
+        </toma>
+        <serv>
+          <locPrest>
+            <cLocPrestacao>3550308</cLocPrestacao>
+          </locPrest>
+          <cServ>
+            <cTribNac>010101</cTribNac>
+            <xDescServ>Servico de teste ficticio para o DANFSe</xDescServ>
+          </cServ>
+        </serv>
+        <valores>
+          <vServPrest>
+            <vServ>250.00</vServ>
+          </vServPrest>
+          <trib>
+            <tribMun>
+              <tribISSQN>1</tribISSQN>
+              <tpRetISSQN>1</tpRetISSQN>
+            </tribMun>
+            <totTrib>
+              <pTotTribSN>6.00</pTotTribSN>
+            </totTrib>
+          </trib>
+        </valores>
+      </infDPS>
+    </DPS>
+  </infNFSe>
+</NFSe>

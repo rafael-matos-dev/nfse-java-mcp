@@ -5,7 +5,7 @@
 
     <groupId>io.github.rafael-matos-dev</groupId>
     <artifactId>nfse-java-mcp</artifactId>
-    <version>0.2.0</version>
+    <version>0.3.0</version>
     <packaging>pom</packaging>
 
     <name>nfse-java-mcp</name>
@@ -35,6 +35,7 @@
 
     <modules>
         <module>nfse-sdk</module>
+        <module>nfse-danfse</module>
         <module>nfse-cli</module>
         <module>nfse-mcp</module>
     </modules>
@@ -47,6 +48,8 @@
         <jackson.version>2.18.2</jackson.version>
         <mcp.version>1.0.2</mcp.version>
         <bouncycastle.version>1.78.1</bouncycastle.version>
+        <openhtmltopdf.version>1.0.10</openhtmltopdf.version>
+        <zxing.version>3.5.4</zxing.version>
     </properties>
 
     <dependencyManagement>
@@ -70,6 +73,23 @@
                 <groupId>io.github.rafael-matos-dev</groupId>
                 <artifactId>nfse-sdk</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.rafael-matos-dev</groupId>
+                <artifactId>nfse-danfse</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <!-- HTML/CSS -> PDF (LGPL 2.1, dependencia de runtime). PDFBox e Apache-2.0. -->
+            <dependency>
+                <groupId>com.openhtmltopdf</groupId>
+                <artifactId>openhtmltopdf-pdfbox</artifactId>
+                <version>${openhtmltopdf.version}</version>
+            </dependency>
+            <!-- QR Code (Apache-2.0). -->
+            <dependency>
+                <groupId>com.google.zxing</groupId>
+                <artifactId>core</artifactId>
+                <version>${zxing.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

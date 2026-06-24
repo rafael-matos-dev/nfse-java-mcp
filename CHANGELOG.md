@@ -5,6 +5,19 @@ e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+## [0.3.0] - 2026-06-23
+
+### Adicionado
+- **Módulo `nfse-danfse`**: geração **local** do PDF do DANFSe a partir do XML autorizado da NFS-e,
+  sem depender da API oficial (desligada em 1º/07/2026 — NT SE/CGNFS-e nº 008/2026). Render HTML/CSS
+  → PDF (OpenHTMLtoPDF) + QR Code (ZXing); layout NT 008 e seção **IBS/CBS** (NT 009) condicional.
+  Publicado no Maven Central como `io.github.rafael-matos-dev:nfse-danfse`.
+- MCP: ferramenta **`gerar_danfse`** (aceita o XML, um arquivo ou o `nfseXmlGZipB64`).
+- CLI: subcomando **`danfse --xml nota.xml --saida danfse.pdf`**.
+
+### Alterado
+- `baixar_danfse` (MCP) marcada como **legado** (válida até 2026-07-01); prefira `gerar_danfse`.
+
 ## [0.2.0] - 2026-06-23
 
 ### Adicionado
@@ -31,6 +44,7 @@ e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
 - `nfse-cli` — CLI para humanos e agentes que rodam shell.
 - Homologação por padrão; produção exige confirmação explícita.
 
-[Não lançado]: https://github.com/rafael-matos-dev/nfse-java-mcp/compare/v0.2.0...HEAD
+[Não lançado]: https://github.com/rafael-matos-dev/nfse-java-mcp/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/rafael-matos-dev/nfse-java-mcp/releases/tag/v0.3.0
 [0.2.0]: https://github.com/rafael-matos-dev/nfse-java-mcp/releases/tag/v0.2.0
 [0.1.0]: https://github.com/rafael-matos-dev/nfse-java-mcp/releases/tag/v0.1.0

@@ -140,8 +140,32 @@ public final class NfseMcpServer {
                     ambiente(a), certificado(a), confirmar(a)));
             }));
 
+        tools.add(tool(jsonMapper, "gerar_danfse",
+            "Gera o PDF do DANFSe LOCALMENTE a partir do XML autorizado da NFS-e (campo nfseXmlGZipB64 da emissao, ou o XML <NFSe>). Substitui baixar_danfse (a API oficial de download e desligada em 2026-07-01).",
+            """
+            {"type":"object","properties":{
+              "xmlNfse":{"type":"string","description":"XML autorizado da NFS-e (<NFSe>...). Use este OU caminhoXmlNfse OU nfseXmlGZipB64."},
+              "caminhoXmlNfse":{"type":"string","description":"Caminho de um arquivo com o XML da NFS-e."},
+              "nfseXmlGZipB64":{"type":"string","description":"Conteudo do campo nfseXmlGZipB64 retornado na emissao (gzip+base64)."},
+              "caminhoSaida":{"type":"string","description":"Arquivo PDF de saida. Padrao: danfse-<chave>.pdf."},
+              "producao":{"type":"boolean","default":false,"description":"Define a URL do QR (consulta publica). Nao emite nada."}
+            }}""",
+            (ex, req) -> {
+                Map<String, Object> a = req.arguments();
+                String xml = xmlNfse(a);
+                boolean producao = Boolean.TRUE.equals(a.get("producao"))
+                    || "true".equalsIgnoreCase(String.valueOf(a.get("producao")));
+                Path saida = Path.of(textoOu(a, "caminhoSaida", "danfse.pdf"));
+                byte[] pdf = br.com.nfse.danfse.DanfseGenerator.gerarPdf(xml, producao, saida);
+                Map<String, Object> r = new LinkedHashMap<>();
+                r.put("sucesso", true);
+                r.put("caminho", saida.toAbsolutePath().normalize().toString());
+                r.put("bytes", pdf.length);
+                return ok(r);
+            }));
+
         tools.add(tool(jsonMapper, "baixar_danfse",
-            "Baixa o DANFSe/PDF de uma NFS-e e salva no caminho informado.",
+            "[LEGADO — valido ate 2026-07-01] Baixa o DANFSe/PDF da API oficial (ADN). Apos o desligamento, use gerar_danfse.",
             """
             {"type":"object","required":["chaveAcesso"],"properties":{
               "chaveAcesso":{"type":"string"},
@@ -232,6 +256,24 @@ public final class NfseMcpServer {
         return new Dps.Tomador(
             str(map.get("cnpj")), str(map.get("cpf")), str(map.get("nome")),
             endereco, str(map.get("telefone")), str(map.get("email")));
+    }
+
+    // Resolve o XML da NFS-e a partir de: xmlNfse (direto), caminhoXmlNfse (arquivo) ou
+    // nfseXmlGZipB64 (campo retornado na emissao). Exatamente uma fonte deve ser informada.
+    private static String xmlNfse(Map<String, Object> args) {
+        String direto = texto(args, "xmlNfse");
+        if (direto != null && !direto.isBlank()) {
+            return direto;
+        }
+        String caminho = texto(args, "caminhoXmlNfse");
+        if (caminho != null && !caminho.isBlank()) {
+            return lerArquivo(caminho);
+        }
+        String gzip = texto(args, "nfseXmlGZipB64");
+        if (gzip != null && !gzip.isBlank()) {
+            return br.com.nfse.sdk.xml.XmlPayloadCodec.ungzipBase64(gzip);
+        }
+        throw new IllegalArgumentException("Informe xmlNfse, caminhoXmlNfse ou nfseXmlGZipB64.");
     }
 
     private static String lerArquivo(String caminho) {
