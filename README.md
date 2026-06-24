@@ -122,7 +122,7 @@ Disponível no Maven Central:
 <dependency>
   <groupId>io.github.rafael-matos-dev</groupId>
   <artifactId>nfse-sdk</artifactId>
-  <version>0.4.1</version>
+  <version>0.4.2</version>
 </dependency>
 ```
 

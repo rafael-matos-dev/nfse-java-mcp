@@ -6,7 +6,7 @@
     <parent>
         <groupId>io.github.rafael-matos-dev</groupId>
         <artifactId>nfse-java-mcp</artifactId>
-        <version>0.4.1</version>
+        <version>0.4.2</version>
     </parent>
 
     <artifactId>nfse-mcp</artifactId>

@@ -33,7 +33,7 @@ public final class DanfseHtmlRenderer {
         StringBuilder h = new StringBuilder(8192);
         h.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
         h.append("<html xmlns=\"http://www.w3.org/1999/xhtml\"><head><meta charset=\"UTF-8\"/>");
-        h.append("<style>").append(css()).append("</style></head><body>");
+        h.append("<style>").append(css()).append("</style></head><body><div class=\"frame\">");
 
         cabecalho(h, d, qrDataUri, logoDataUri, cfg);
         identificacao(h, d.identificacao());
@@ -50,7 +50,7 @@ public final class DanfseHtmlRenderer {
         totaisAproximados(h, d.valores());
         informacoesComplementares(h, d.informacoesComplementares());
 
-        h.append("</body></html>");
+        h.append("</div></body></html>");
         return h.toString();
     }
 
@@ -318,20 +318,37 @@ public final class DanfseHtmlRenderer {
         }
     }
 
+    // Limite da descricao de tributacao na celula (~2 linhas), como no DANFSe oficial.
+    private static final int MAX_DESC_TRIB = 60;
+
     private static String tribNac(Danfse.Servico s) {
         if (s == null || s.codigoTributacaoNacional() == null) {
             return "-";
         }
-        String desc = s.descricaoTributacaoNacional();
-        return esc(s.codigoTributacaoNacional() + (desc == null ? "" : " - " + desc));
+        return esc(s.codigoTributacaoNacional() + sufixoDesc(s.descricaoTributacaoNacional()));
     }
 
     private static String tribMun(Danfse.Servico s) {
         if (s == null || s.codigoTributacaoMunicipal() == null) {
             return "-";
         }
-        String desc = s.descricaoTributacaoMunicipal();
-        return esc(s.codigoTributacaoMunicipal() + (desc == null ? "" : " - " + desc));
+        return esc(s.codigoTributacaoMunicipal() + sufixoDesc(s.descricaoTributacaoMunicipal()));
+    }
+
+    private static String sufixoDesc(String desc) {
+        return desc == null ? "" : " - " + resumir(desc, MAX_DESC_TRIB);
+    }
+
+    /** Trunca em limite de palavra e adiciona reticencias, para a descricao ocupar ~2 linhas. */
+    private static String resumir(String texto, int max) {
+        if (texto == null || texto.length() <= max) {
+            return texto;
+        }
+        int corte = texto.lastIndexOf(' ', max);
+        if (corte < max / 2) {
+            corte = max;
+        }
+        return texto.substring(0, corte).trim() + "...";
     }
 
     private static String data(LocalDate d) {
@@ -414,12 +431,15 @@ public final class DanfseHtmlRenderer {
     }
 
     private static String css() {
+        // Apenas linhas HORIZONTAIS finas separando os itens (sem separadores verticais entre
+        // colunas) e um quadro externo leve. Fundo branco — aparencia do DANFSe oficial.
         return """
             @page { size: A4 portrait; margin: 8mm; }
             * { box-sizing: border-box; }
-            body { font-family: Arial, 'Helvetica', sans-serif; font-size: 7pt; color: #000; }
+            body { font-family: Arial, 'Helvetica', sans-serif; font-size: 7pt; color: #111; background: #fff; }
             table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-            .hdr td { border: 0.6pt solid #000; padding: 3pt 4pt; vertical-align: middle; }
+            .frame { border: 0.5pt solid #8a8f96; }
+            .hdr td { padding: 3pt 5pt; vertical-align: middle; }
             .hdr-l { width: 30%; text-align: center; }
             .hdr-c { width: 46%; text-align: center; }
             .hdr-r { width: 24%; text-align: center; }
@@ -429,16 +449,15 @@ public final class DanfseHtmlRenderer {
             .danfse-sub { font-size: 7.5pt; }
             .mun { font-size: 8.5pt; font-weight: bold; margin-top: 2pt; }
             .aviso { color: #cc0000; font-size: 8.5pt; font-weight: bold; margin-top: 2pt; }
-            .sml { font-size: 5.5pt; color: #333; margin-top: 1pt; }
-            .grid { margin-top: -0.6pt; }
-            .grid td { border: 0.6pt solid #000; padding: 1.5pt 4pt; vertical-align: top; }
-            .lbl { font-size: 5.2pt; color: #444; line-height: 1.05; }
+            .sml { font-size: 5.5pt; color: #555; margin-top: 1pt; }
+            .grid td { border-top: 0.5pt solid #d2d5d9; padding: 1.5pt 5pt; vertical-align: top; }
+            .lbl { font-size: 5.2pt; color: #6b7075; line-height: 1.05; }
             .val { font-size: 7.5pt; font-weight: bold; line-height: 1.1; min-height: 8.5pt; }
             .chave { font-size: 9.5pt; font-weight: bold; letter-spacing: 0.4pt; }
-            .k { vertical-align: middle; text-align: center; }
-            .k .lbl { text-align: left; }
-            .band { background: #c9c9c9; border: 0.6pt solid #000; margin-top: -0.6pt;
-                    font-size: 7pt; font-weight: bold; padding: 1.5pt 4pt; }
+            .k { vertical-align: middle; }
+            .band { background: #e3e6e9; border-top: 0.6pt solid #7c828a;
+                    border-bottom: 0.6pt solid #7c828a; color: #1f2937;
+                    font-size: 6.8pt; font-weight: bold; letter-spacing: 0.2pt; padding: 2pt 5pt; }
             .band.center { text-align: center; }
             .free { min-height: 34pt; vertical-align: top; padding: 4pt; }
             """;

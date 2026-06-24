@@ -5,6 +5,13 @@ e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+## [0.4.2] - 2026-06-24
+
+### Alterado
+- Layout do DANFSe mais próximo do oficial: fundo branco, **sem linhas verticais** entre colunas,
+  apenas linhas horizontais finas entre os itens e **faixas de seção em cinza** marcando claramente
+  cada parte. Descrições de tributação (nacional/municipal) truncadas em ~2 linhas com reticências.
+
 ## [0.4.1] - 2026-06-24
 
 ### Adicionado
@@ -68,7 +75,8 @@ e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
 - `nfse-cli` — CLI para humanos e agentes que rodam shell.
 - Homologação por padrão; produção exige confirmação explícita.
 
-[Não lançado]: https://github.com/rafael-matos-dev/nfse-java-mcp/compare/v0.4.1...HEAD
+[Não lançado]: https://github.com/rafael-matos-dev/nfse-java-mcp/compare/v0.4.2...HEAD
+[0.4.2]: https://github.com/rafael-matos-dev/nfse-java-mcp/releases/tag/v0.4.2
 [0.4.1]: https://github.com/rafael-matos-dev/nfse-java-mcp/releases/tag/v0.4.1
 [0.4.0]: https://github.com/rafael-matos-dev/nfse-java-mcp/releases/tag/v0.4.0
 [0.3.0]: https://github.com/rafael-matos-dev/nfse-java-mcp/releases/tag/v0.3.0
