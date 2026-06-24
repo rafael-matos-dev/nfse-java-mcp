@@ -1,5 +1,6 @@
 package br.com.nfse.danfse;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -38,6 +39,20 @@ class DanfseGeneratorTest {
         assertTrue(texto.contains("111.444.777-35"), "CPF mascarado");
         // XML ficticio e homologacao (ambGer=2) -> aviso obrigatorio
         assertTrue(texto.contains("SEM VALIDADE"), "aviso de homologacao");
+    }
+
+    @Test
+    void logoDoEmitenteEntraNoCabecalhoSomenteQuandoInformado() throws Exception {
+        Danfse d = NfseXmlReader.read(NfseXmlReaderTest.xmlExemplo());
+        String dataUri = "data:image/png;base64,AAAA";
+
+        String comLogo = DanfseHtmlRenderer.render(d, null, null, DanfseConfig.comLogoEmitente(dataUri));
+        assertTrue(comLogo.contains("class=\"logo-emit\""), "deve incluir a img do logo do emitente");
+        assertTrue(comLogo.contains(dataUri), "deve embutir a imagem do emitente");
+
+        String semLogo = DanfseHtmlRenderer.render(d, null, null, DanfseConfig.vazio());
+        assertFalse(semLogo.contains("class=\"logo-emit\""), "sem config nao deve haver img do emitente");
+        assertFalse(semLogo.contains(dataUri), "sem config nao deve embutir imagem");
     }
 
     @Test

@@ -114,7 +114,13 @@ public final class Cli {
         String xml = Files.readString(Path.of(a.required("xml")));
         Path saida = Path.of(a.getOr("saida", "danfse.pdf"));
         boolean producao = a.ambiente() == Ambiente.PRODUCAO;
-        byte[] pdf = br.com.nfse.danfse.DanfseGenerator.gerarPdf(xml, producao, saida);
+        var config = br.com.nfse.danfse.DanfseConfig.vazio();
+        String logo = a.get("logo-emitente");
+        if (logo != null) {
+            config = br.com.nfse.danfse.DanfseConfig.comLogoEmitente(
+                br.com.nfse.danfse.DanfseGenerator.dataUriImagem(Path.of(logo)));
+        }
+        byte[] pdf = br.com.nfse.danfse.DanfseGenerator.gerarPdf(xml, producao, config, saida);
         emit(a, java.util.Map.of(
             "sucesso", true,
             "caminho", saida.toAbsolutePath().normalize().toString(),
@@ -184,8 +190,9 @@ public final class Cli {
               cancelar --chave CHAVE --motivo-codigo C --motivo-descricao D
                                             Cancela uma NFS-e (evento 101101).
               pdf --chave CHAVE [--saida arq.pdf]   Baixa o DANFSe/PDF da API oficial (legado, ate 2026-07-01).
-              danfse --xml nota.xml [--saida arq.pdf]
+              danfse --xml nota.xml [--saida arq.pdf] [--logo-emitente logo.png]
                                             Gera o DANFSe/PDF localmente a partir do XML da NFS-e.
+                                            --logo-emitente: logo do prestador no cabecalho (~300x120 px).
 
             Opcoes comuns:
               --ambiente homologacao|producao   Padrao: homologacao.

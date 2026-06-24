@@ -64,6 +64,10 @@ public final class DanfseHtmlRenderer {
         } else {
             h.append("<div class=\"danfse-tit\">NFS-e</div>");
         }
+        // Logo do emitente (prestador), ao lado do logo oficial. Limitado por CSS para nunca quebrar.
+        if (cfg.temLogoEmitente()) {
+            h.append("<img class=\"logo-emit\" src=\"").append(cfg.logoEmitenteDataUri()).append("\" alt=\"\"/>");
+        }
         h.append("</td>");
 
         h.append("<td class=\"hdr-c\">")
@@ -440,10 +444,11 @@ public final class DanfseHtmlRenderer {
             table { width: 100%; border-collapse: collapse; table-layout: fixed; }
             .frame { border: 0.5pt solid #8a8f96; }
             .hdr td { padding: 3pt 5pt; vertical-align: middle; }
-            .hdr-l { width: 30%; text-align: center; }
-            .hdr-c { width: 46%; text-align: center; }
+            .hdr-l { width: 34%; text-align: center; }
+            .hdr-c { width: 42%; text-align: center; }
             .hdr-r { width: 24%; text-align: center; }
-            .logo { max-width: 96%; max-height: 46pt; }
+            .logo { max-width: 60%; max-height: 40pt; vertical-align: middle; }
+            .logo-emit { max-width: 38%; max-height: 38pt; vertical-align: middle; margin-left: 5pt; }
             .brasao { max-height: 18pt; vertical-align: middle; margin-right: 3pt; }
             .danfse-tit { font-size: 13pt; font-weight: bold; }
             .danfse-sub { font-size: 7.5pt; }

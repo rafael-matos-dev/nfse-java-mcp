@@ -1,30 +1,42 @@
 package br.com.nfse.danfse;
 
 /**
- * Configuracao opcional de identificacao do municipio no DANFSe (brasão + contato da prefeitura).
+ * Configuração opcional do DANFSe: identificação do município (brasão + contato da prefeitura) e o
+ * logo do emitente (prestador) no cabeçalho.
  *
- * <p>Esses dados NAO vem no XML da NFS-e e nao ha API publica que os forneca — o emissor os informa
- * se quiser reproduzir o bloco do municipio como no documento oficial. Sem config, o DANFSe mostra
- * apenas o nome do municipio (que vem do XML) e o logo oficial da NFS-e.
+ * <p>Esses dados NÃO vêm no XML da NFS-e — o emissor os informa se quiser. Sem config, o DANFSe mostra
+ * apenas o nome do município (que vem do XML) e o logo oficial da NFS-e.
  *
- * <p>{@code brasaoDataUri} deve ser uma data URI de imagem (ex.: {@code data:image/png;base64,...}).
- * Todos os campos sao opcionais ({@code null} = omitido).
+ * <p>Imagens ({@code brasaoDataUri}, {@code logoEmitenteDataUri}) devem ser data URIs
+ * (ex.: {@code data:image/png;base64,...}). O logo do emitente é limitado por CSS para nunca quebrar
+ * o layout; <b>tamanho sugerido: ~300×120 px (proporção ~2,5:1), PNG com fundo transparente</b>.
+ * Todos os campos são opcionais ({@code null} = omitido).
  */
 public record DanfseConfig(
     String municipioNome,
     String brasaoDataUri,
     String departamento,
     String telefone,
-    String email
+    String email,
+    String logoEmitenteDataUri
 ) {
 
-    /** Config vazia (sem branding municipal). */
+    /** Config vazia (sem branding municipal nem logo do emitente). */
     public static DanfseConfig vazio() {
-        return new DanfseConfig(null, null, null, null, null);
+        return new DanfseConfig(null, null, null, null, null, null);
+    }
+
+    /** Atalho para o caso comum: apenas o logo do emitente no cabeçalho. */
+    public static DanfseConfig comLogoEmitente(String logoEmitenteDataUri) {
+        return new DanfseConfig(null, null, null, null, null, logoEmitenteDataUri);
     }
 
     public boolean temBrasao() {
-        return brasaoDataUri != null && !brasaoDataUri.isBlank();
+        return naoVazio(brasaoDataUri);
+    }
+
+    public boolean temLogoEmitente() {
+        return naoVazio(logoEmitenteDataUri);
     }
 
     public boolean temContato() {

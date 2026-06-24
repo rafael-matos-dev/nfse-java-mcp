@@ -5,6 +5,14 @@ e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+## [0.4.3] - 2026-06-24
+
+### Adicionado
+- DANFSe: opção de incluir o **logo do emitente (prestador)** no cabeçalho, ao lado do logo da NFS-e.
+  `DanfseConfig.comLogoEmitente(...)` / `DanfseGenerator.dataUriImagem(arquivo)`; CLI `danfse --logo-emitente`;
+  MCP `gerar_danfse` argumento `logoEmitenteArquivo`. Limitado por CSS para não quebrar o layout
+  (tamanho sugerido ~300×120 px).
+
 ## [0.4.2] - 2026-06-24
 
 ### Alterado
@@ -75,7 +83,8 @@ e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
 - `nfse-cli` — CLI para humanos e agentes que rodam shell.
 - Homologação por padrão; produção exige confirmação explícita.
 
-[Não lançado]: https://github.com/rafael-matos-dev/nfse-java-mcp/compare/v0.4.2...HEAD
+[Não lançado]: https://github.com/rafael-matos-dev/nfse-java-mcp/compare/v0.4.3...HEAD
+[0.4.3]: https://github.com/rafael-matos-dev/nfse-java-mcp/releases/tag/v0.4.3
 [0.4.2]: https://github.com/rafael-matos-dev/nfse-java-mcp/releases/tag/v0.4.2
 [0.4.1]: https://github.com/rafael-matos-dev/nfse-java-mcp/releases/tag/v0.4.1
 [0.4.0]: https://github.com/rafael-matos-dev/nfse-java-mcp/releases/tag/v0.4.0

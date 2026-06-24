@@ -148,6 +148,7 @@ public final class NfseMcpServer {
               "caminhoXmlNfse":{"type":"string","description":"Caminho de um arquivo com o XML da NFS-e."},
               "nfseXmlGZipB64":{"type":"string","description":"Conteudo do campo nfseXmlGZipB64 retornado na emissao (gzip+base64)."},
               "caminhoSaida":{"type":"string","description":"Arquivo PDF de saida. Padrao: danfse-<chave>.pdf."},
+              "logoEmitenteArquivo":{"type":"string","description":"Caminho de uma imagem (PNG/JPG) com o logo do prestador, exibido no cabecalho. Tamanho sugerido ~300x120 px."},
               "producao":{"type":"boolean","default":false,"description":"Define a URL do QR (consulta publica). Nao emite nada."}
             }}""",
             (ex, req) -> {
@@ -156,7 +157,13 @@ public final class NfseMcpServer {
                 boolean producao = Boolean.TRUE.equals(a.get("producao"))
                     || "true".equalsIgnoreCase(String.valueOf(a.get("producao")));
                 Path saida = Path.of(textoOu(a, "caminhoSaida", "danfse.pdf"));
-                byte[] pdf = br.com.nfse.danfse.DanfseGenerator.gerarPdf(xml, producao, saida);
+                var config = br.com.nfse.danfse.DanfseConfig.vazio();
+                String logo = texto(a, "logoEmitenteArquivo");
+                if (logo != null && !logo.isBlank()) {
+                    config = br.com.nfse.danfse.DanfseConfig.comLogoEmitente(
+                        br.com.nfse.danfse.DanfseGenerator.dataUriImagem(Path.of(logo)));
+                }
+                byte[] pdf = br.com.nfse.danfse.DanfseGenerator.gerarPdf(xml, producao, config, saida);
                 Map<String, Object> r = new LinkedHashMap<>();
                 r.put("sucesso", true);
                 r.put("caminho", saida.toAbsolutePath().normalize().toString());

@@ -122,7 +122,7 @@ Disponível no Maven Central:
 <dependency>
   <groupId>io.github.rafael-matos-dev</groupId>
   <artifactId>nfse-sdk</artifactId>
-  <version>0.4.2</version>
+  <version>0.4.3</version>
 </dependency>
 ```
 
@@ -159,6 +159,15 @@ MCP: ferramenta `gerar_danfse` (aceita o XML, um arquivo, ou o `nfseXmlGZipB64`)
 O layout segue o padrão nacional (NT 008): logo oficial da NFS-e, aviso **"NFS-e SEM VALIDADE JURÍDICA"** em homologação, e a seção **IBS/CBS** (NT 009) quando presente no XML. Render via HTML/CSS → PDF (OpenHTMLtoPDF) + QR Code (ZXing).
 
 O nome do município dos endereços é resolvido a partir do próprio XML quando possível; para municípios de fora (ex.: tomador em outra cidade), consulta a **API do IBGE** (com cache e *fallback* gracioso ao código). Para gerar 100% offline, use `-Dnfse.danfse.ibge=false`.
+
+Para incluir o **logo do emitente (prestador)** no cabeçalho (ao lado do logo da NFS-e):
+
+```java
+var cfg = DanfseConfig.comLogoEmitente(DanfseGenerator.dataUriImagem(Path.of("logo.png")));
+byte[] pdf = DanfseGenerator.gerarPdf(nfseXml, false, cfg, Path.of("danfse.pdf"));
+```
+
+CLI: `danfse --xml nota.xml --logo-emitente logo.png` · MCP: argumento `logoEmitenteArquivo`. O logo é limitado por CSS para nunca quebrar o layout; **tamanho sugerido ~300×120 px (PNG, fundo transparente)**.
 
 O brasão e o contato da prefeitura não vêm no XML (e não há API pública que os forneça); são opcionais via `DanfseConfig`:
 
