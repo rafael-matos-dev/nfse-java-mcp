@@ -37,9 +37,9 @@ public final class DanfseHtmlRenderer {
 
         cabecalho(h, d, qrDataUri, logoDataUri, cfg);
         identificacao(h, d.identificacao());
-        pessoa(h, "PRESTADOR DO SERVICO", "EMITENTE DA NFS-e", d.prestador(), true);
-        pessoa(h, "TOMADOR DO SERVICO", "TOMADOR DO SERVICO", d.tomador(), false);
-        band(h, "INTERMEDIARIO DO SERVICO NAO IDENTIFICADO NA NFS-e", true);
+        pessoa(h, "PRESTADOR DO SERVIÇO", "EMITENTE DA NFS-e", d.prestador(), true);
+        pessoa(h, "TOMADOR DO SERVIÇO", "TOMADOR DO SERVIÇO", d.tomador(), false);
+        band(h, "INTERMEDIÁRIO DO SERVIÇO NÃO IDENTIFICADO NA NFS-e", true);
         servico(h, d.servico());
         tributacaoMunicipal(h, d);
         tributacaoFederal(h);
@@ -71,7 +71,8 @@ public final class DanfseHtmlRenderer {
             .append("<div class=\"danfse-sub\">Documento Auxiliar da NFS-e</div>");
         municipioHeader(h, d, cfg);
         if (d.homologacao()) {
-            h.append("<div class=\"aviso\">NFS-e SEM VALIDADE JURIDICA</div>");
+            h.append("<div class=\"aviso\">NFS-e SEM VALIDADE JURÍDICA</div>")
+                .append("<div class=\"sml\">Ambiente de Produção Restrita - Documento sem valor legal</div>");
         }
         h.append("</td>");
 
@@ -112,13 +113,13 @@ public final class DanfseHtmlRenderer {
     private static void identificacao(StringBuilder h, Danfse.Identificacao id) {
         h.append("<table class=\"grid\">");
         row(h,
-            campo("Numero da NFS-e", dash(id.numeroNfse())),
-            campo("Competencia da NFS-e", data(id.competencia())),
-            campo("Data e Hora da emissao da NFS-e", dataHora(id.emissaoNfse())));
+            campo("Número da NFS-e", dash(id.numeroNfse())),
+            campo("Competência da NFS-e", data(id.competencia())),
+            campo("Data e Hora da emissão da NFS-e", dataHora(id.emissaoNfse())));
         row(h,
-            campo("Numero da DPS", dash(id.numeroDps())),
-            campo("Serie da DPS", dash(id.serieDps())),
-            campo("Data e Hora da emissao da DPS", dataHora(id.emissaoDps())));
+            campo("Número da DPS", dash(id.numeroDps())),
+            campo("Série da DPS", dash(id.serieDps())),
+            campo("Data e Hora da emissão da DPS", dataHora(id.emissaoDps())));
         h.append("</table>");
     }
 
@@ -126,72 +127,81 @@ public final class DanfseHtmlRenderer {
         band(h, band, false);
         h.append("<table class=\"grid\">");
         row(h,
-            campo(prestador ? "Prestador do Servico" : "", ""),
+            campo(prestador ? "Prestador do Serviço" : "", ""),
             campo("CNPJ / CPF / NIF", documento(p)),
-            campo("Inscricao Municipal", p == null ? "-" : dash(p.inscricaoMunicipal())),
+            campo("Inscrição Municipal", p == null ? "-" : dash(p.inscricaoMunicipal())),
             campo("Telefone", p == null ? "-" : telefone(p.telefone())));
         row(h,
             campoSpan("Nome / Nome Empresarial", p == null ? "-" : dash(p.nome()), 3),
             campo("E-mail", p == null ? "-" : dash(p.email())));
         row(h,
-            campoSpan("Endereco", endereco(p), 2),
-            campo("Municipio", p == null ? "-" : municipioPessoa(p)),
+            campoSpan("Endereço", endereco(p), 2),
+            campo("Município", p == null ? "-" : municipioPessoa(p)),
             campo("CEP", p == null || p.endereco() == null ? "-" : cep(p.endereco().cep())));
         if (prestador) {
             row(h,
-                campoSpan("Simples Nacional na Data de Competencia", p == null ? "-" : dash(p.regimeSimplesNacional()), 2),
-                campoSpan("Regime de Apuracao Tributaria pelo SN", p == null ? "-" : dash(p.regimeApuracaoSimplesNacional()), 2));
+                campoSpan("Simples Nacional na Data de Competência", p == null ? "-" : dash(p.regimeSimplesNacional()), 2),
+                campoSpan("Regime de Apuração Tributária pelo SN", p == null ? "-" : dash(p.regimeApuracaoSimplesNacional()), 2));
         }
         h.append("</table>");
     }
 
     private static void servico(StringBuilder h, Danfse.Servico s) {
-        band(h, "SERVICO PRESTADO", false);
+        band(h, "SERVIÇO PRESTADO", false);
         h.append("<table class=\"grid\">");
         row(h,
-            campo("Codigo de Tributacao Nacional", tribNac(s)),
-            campo("Codigo de Tributacao Municipal", s == null ? "-" : dash(s.codigoTributacaoMunicipal())),
-            campo("Local da Prestacao", s == null ? "-" : dash(s.localPrestacao())),
-            campo("Pais da Prestacao", "Brasil"));
-        row(h, campoSpan("Descricao do Servico", s == null ? "-" : dash(s.descricao()), 4));
+            campo("Código de Tributação Nacional", tribNac(s)),
+            campo("Código de Tributação Municipal", tribMun(s)),
+            campo("Local da Prestação", s == null ? "-" : dash(s.localPrestacao())),
+            campo("País da Prestação", "Brasil"));
+        row(h, campoSpan("Código NBS", nbs(s), 4));
+        row(h, campoSpan("Descrição do Serviço", s == null ? "-" : dash(s.descricao()), 4));
         h.append("</table>");
+    }
+
+    private static String nbs(Danfse.Servico s) {
+        if (s == null || s.codigoNbs() == null) {
+            return "-";
+        }
+        String desc = s.descricaoNbs();
+        return esc(s.codigoNbs() + (desc == null ? "" : " - " + desc));
     }
 
     private static void tributacaoMunicipal(StringBuilder h, Danfse d) {
         Danfse.Servico s = d.servico();
-        band(h, "TRIBUTACAO MUNICIPAL", false);
+        band(h, "TRIBUTAÇÃO MUNICIPAL", false);
         h.append("<table class=\"grid\">");
         row(h,
-            campo("Tributacao do ISSQN", s == null ? "-" : dash(s.tributacaoIssqn())),
-            campo("Pais Resultado da Prestacao", "-"),
-            campo("Municipio de Incidencia do ISSQN", s == null ? "-" : dash(s.municipioIncidencia())),
-            campo("Regime Especial de Tributacao", "Nenhum"));
+            campo("Tributação do ISSQN", s == null ? "-" : dash(s.tributacaoIssqn())),
+            campo("País Resultado da Prestação", "-"),
+            campo("Município de Incidência do ISSQN", s == null ? "-" : dash(s.municipioIncidencia())),
+            campo("Regime Especial de Tributação", "Nenhum"));
         row(h,
-            campo("Valor do Servico", money(d.valores() == null ? null : d.valores().valorServico())),
+            campo("Valor do Serviço", money(d.valores() == null ? null : d.valores().valorServico())),
             campo("Desconto Incondicionado", money(d.valores() == null ? null : d.valores().descontoIncondicionado())),
             campo("BC ISSQN", "-"),
-            campo("Retencao do ISSQN", s == null ? "-" : dash(s.tipoRetencaoIssqn())));
+            campo("Retenção do ISSQN", s == null ? "-" : dash(s.tipoRetencaoIssqn())));
         h.append("</table>");
     }
 
     private static void tributacaoFederal(StringBuilder h) {
-        band(h, "TRIBUTACAO FEDERAL", false);
+        band(h, "TRIBUTAÇÃO FEDERAL", false);
         h.append("<table class=\"grid\">");
         row(h,
             campo("IRRF", "-"),
-            campo("Contribuicao Previdenciaria - Retida", "-"),
-            campo("PIS - Debito Apuracao Propria", "-"),
-            campo("COFINS - Debito Apuracao Propria", "-"));
+            campo("Contribuição Previdenciária - Retida", "-"),
+            campo("PIS - Débito Apuração Própria", "-"),
+            campo("COFINS - Débito Apuração Própria", "-"));
         h.append("</table>");
     }
 
     private static void ibsCbs(StringBuilder h, Danfse.IbsCbs ibs) {
-        band(h, "IBS / CBS (REFORMA TRIBUTARIA)", false);
+        band(h, "IBS / CBS (REFORMA TRIBUTÁRIA)", false);
         h.append("<table class=\"grid\">");
         row(h,
             campo("Valor do IBS", money(ibs.valorTotalIbs())),
             campo("Valor da CBS", money(ibs.valorTotalCbs())),
-            campoSpan("Observacao", dash(ibs.observacao()), 2));
+            campoSpan("Observação", dash(ibs.observacao()), 2));
         h.append("</table>");
     }
 
@@ -199,10 +209,10 @@ public final class DanfseHtmlRenderer {
         band(h, "VALOR TOTAL DA NFS-e", false);
         h.append("<table class=\"grid\">");
         row(h,
-            campo("Valor do Servico", money(v == null ? null : v.valorServico())),
+            campo("Valor do Serviço", money(v == null ? null : v.valorServico())),
             campo("Desconto Condicionado", money(v == null ? null : v.descontoCondicionado())),
             campo("Desconto Incondicionado", money(v == null ? null : v.descontoIncondicionado())),
-            campo("Valor Liquido da NFS-e", money(v == null ? null : v.valorLiquido())));
+            campo("Valor Líquido da NFS-e", money(v == null ? null : v.valorLiquido())));
         h.append("</table>");
     }
 
@@ -217,7 +227,7 @@ public final class DanfseHtmlRenderer {
     }
 
     private static void informacoesComplementares(StringBuilder h, String texto) {
-        band(h, "INFORMACOES COMPLEMENTARES", false);
+        band(h, "INFORMAÇÕES COMPLEMENTARES", false);
         h.append("<table class=\"grid\"><tr><td class=\"free\">")
             .append(esc(dash(texto))).append("</td></tr></table>");
     }
@@ -288,6 +298,14 @@ public final class DanfseHtmlRenderer {
         if (mun == null && uf == null) {
             return "-";
         }
+        // Se o municipio ainda e um codigo IBGE (nao veio nomeado no XML), tenta resolver no IBGE.
+        // A resolucao ja inclui a UF ("Cidade - UF"); fallback gracioso para codigo + UF do endereco.
+        if (mun != null && mun.matches("\\d{7}")) {
+            var resolvido = MunicipioResolver.resolver(mun);
+            if (resolvido.isPresent()) {
+                return esc(resolvido.get());
+            }
+        }
         return esc((mun == null ? "" : mun) + (uf == null ? "" : " - " + uf));
     }
 
@@ -306,6 +324,14 @@ public final class DanfseHtmlRenderer {
         }
         String desc = s.descricaoTributacaoNacional();
         return esc(s.codigoTributacaoNacional() + (desc == null ? "" : " - " + desc));
+    }
+
+    private static String tribMun(Danfse.Servico s) {
+        if (s == null || s.codigoTributacaoMunicipal() == null) {
+            return "-";
+        }
+        String desc = s.descricaoTributacaoMunicipal();
+        return esc(s.codigoTributacaoMunicipal() + (desc == null ? "" : " - " + desc));
     }
 
     private static String data(LocalDate d) {

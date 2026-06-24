@@ -37,7 +37,7 @@ class DanfseGeneratorTest {
         assertTrue(texto.contains("12.345.678/0001-99"), "CNPJ mascarado");
         assertTrue(texto.contains("111.444.777-35"), "CPF mascarado");
         // XML ficticio e homologacao (ambGer=2) -> aviso obrigatorio
-        assertTrue(texto.contains("SEM VALIDADE JURIDICA"), "aviso de homologacao");
+        assertTrue(texto.contains("SEM VALIDADE"), "aviso de homologacao");
     }
 
     @Test

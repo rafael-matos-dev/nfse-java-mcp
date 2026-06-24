@@ -5,6 +5,8 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
@@ -36,13 +38,14 @@ public final class NfseXmlReader {
             Element toma = dps == null ? null : firstByLocalName(dps, "toma");
             Element serv = dps == null ? null : firstByLocalName(dps, "serv");
             Element trib = dps == null ? null : firstByLocalName(dps, "trib");
+            Map<String, String> municipios = mapaMunicipios(infNfse, dps, serv);
 
             return new Danfse(
                 chaveAcesso(infNfse),
                 homologacao(infNfse, dps),
                 identificacao(infNfse, dps),
-                prestador(emit, prest),
-                tomador(toma),
+                prestador(emit, prest, municipios),
+                tomador(toma, municipios),
                 servico(infNfse, serv, trib),
                 valores(infNfse, dps, trib),
                 primeiroNaoVazio(text(infNfse, "xOutInf"), text(dps, "xInfComp")),
@@ -52,6 +55,26 @@ public final class NfseXmlReader {
             throw exception;
         } catch (Exception exception) {
             throw new DanfseException("Nao foi possivel ler o XML da NFS-e.", exception);
+        }
+    }
+
+    // Coleta pares codigo->nome de municipio que o proprio XML fornece (cLocIncid/xLocIncid,
+    // cLocEmi/xLocEmi, cLocPrestacao/xLocPrestacao). Resolve o nome no endereco do prestador/tomador
+    // quando o municipio for um desses (caso comum: prestador na cidade de emissao). Sem tabela IBGE.
+    private static Map<String, String> mapaMunicipios(Element infNfse, Element dps, Element serv) {
+        Map<String, String> mapa = new HashMap<>();
+        addPar(mapa, text(infNfse, "cLocIncid"), text(infNfse, "xLocIncid"));
+        addPar(mapa, text(dps, "cLocEmi"), text(infNfse, "xLocEmi"));
+        Element locPrest = serv == null ? null : firstByLocalName(serv, "locPrest");
+        addPar(mapa, text(locPrest, "cLocPrestacao"), text(infNfse, "xLocPrestacao"));
+        Element ibs = firstByLocalName(infNfse, "IBSCBS");
+        addPar(mapa, text(ibs, "cLocalidadeIncid"), text(ibs, "xLocalidadeIncid"));
+        return mapa;
+    }
+
+    private static void addPar(Map<String, String> mapa, String codigo, String nome) {
+        if (codigo != null && nome != null && !codigo.isBlank() && !nome.isBlank()) {
+            mapa.putIfAbsent(codigo, nome);
         }
     }
 
@@ -85,7 +108,7 @@ public final class NfseXmlReader {
         );
     }
 
-    private static Danfse.Pessoa prestador(Element emit, Element prest) {
+    private static Danfse.Pessoa prestador(Element emit, Element prest, Map<String, String> municipios) {
         Element regTrib = prest == null ? null : firstByLocalName(prest, "regTrib");
         return new Danfse.Pessoa(
             text(emit, "CNPJ"),
@@ -94,13 +117,13 @@ public final class NfseXmlReader {
             text(emit, "xNome"),
             text(emit, "fone"),
             text(emit, "email"),
-            endereco(emit == null ? null : firstByLocalName(emit, "enderNac"), false),
+            endereco(emit == null ? null : firstByLocalName(emit, "enderNac"), false, municipios),
             simplesNacional(text(regTrib, "opSimpNac")),
             regimeApuracao(text(regTrib, "regApTribSN"))
         );
     }
 
-    private static Danfse.Pessoa tomador(Element toma) {
+    private static Danfse.Pessoa tomador(Element toma, Map<String, String> municipios) {
         if (toma == null) {
             return null;
         }
@@ -112,24 +135,26 @@ public final class NfseXmlReader {
             text(toma, "xNome"),
             text(toma, "fone"),
             text(toma, "email"),
-            endereco(end, true),
+            endereco(end, true, municipios),
             null,
             null
         );
     }
 
     /** No emit o endereco fica direto em enderNac; no tomador ha um nivel endNac aninhado dentro de end. */
-    private static Danfse.Endereco endereco(Element escopo, boolean tomador) {
+    private static Danfse.Endereco endereco(Element escopo, boolean tomador, Map<String, String> municipios) {
         if (escopo == null) {
             return null;
         }
         Element nac = tomador ? firstByLocalName(escopo, "endNac") : escopo;
+        String cMun = text(nac, "cMun");
+        String nomeMun = cMun != null ? municipios.getOrDefault(cMun, cMun) : null;
         return new Danfse.Endereco(
             text(escopo, "xLgr"),
             text(escopo, "nro"),
             text(escopo, "xCpl"),
             text(escopo, "xBairro"),
-            text(nac, "cMun"),
+            nomeMun,
             text(escopo, "UF"),
             text(nac, "CEP")
         );
@@ -141,6 +166,9 @@ public final class NfseXmlReader {
             text(serv, "cTribNac"),
             text(infNfse, "xTribNac"),
             text(serv, "cTribMun"),
+            text(infNfse, "xTribMun"),
+            text(serv, "cNBS"),
+            text(infNfse, "xNBS"),
             text(infNfse, "xLocPrestacao"),
             text(serv, "xDescServ"),
             tributacaoIssqn(text(tribMun, "tribISSQN")),

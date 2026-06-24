@@ -10,6 +10,12 @@ Licença: **Creative Commons Atribuição-SemDerivações 3.0 (CC BY-ND 3.0)**.
 O arquivo é redistribuído **sem modificações**, para uso no cabeçalho do DANFSe conforme a
 Nota Técnica SE/CGNFS-e nº 008/2026.
 
+## API do IBGE
+
+Para resolver o nome de municípios que não vêm nomeados no XML, este módulo consulta a API pública
+de localidades do IBGE (`servicodados.ibge.gov.br`) em tempo de geração, com cache em memória e
+fallback gracioso ao código. Desative com `-Dnfse.danfse.ibge=false` (geração 100% offline).
+
 ## Dependências de runtime
 
 - OpenHTMLtoPDF — LGPL-2.1

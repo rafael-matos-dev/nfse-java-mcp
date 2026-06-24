@@ -52,13 +52,16 @@ class NfseXmlReaderTest {
         assertNull(t.cnpj());
         assertEquals("Fulano de Tal", t.nome());
         assertEquals("Avenida Central", t.endereco().logradouro());
-        assertEquals("3550308", t.endereco().municipio());
+        // municipio resolvido de codigo -> nome via pares do proprio XML (cLocPrestacao/xLocPrestacao=3550308/Sao Paulo)
+        assertEquals("Sao Paulo", t.endereco().municipio());
     }
 
     @Test
     void extraiServicoEValores() throws Exception {
         Danfse d = NfseXmlReader.read(xmlExemplo());
         assertEquals("010101", d.servico().codigoTributacaoNacional());
+        assertEquals("001", d.servico().codigoTributacaoMunicipal());
+        assertEquals("Servico municipal ficticio.", d.servico().descricaoTributacaoMunicipal());
         assertEquals("Operacao Tributavel", d.servico().tributacaoIssqn());
         assertEquals("Nao Retido", d.servico().tipoRetencaoIssqn());
         assertEquals(0, d.valores().valorServico().compareTo(new BigDecimal("250.00")));

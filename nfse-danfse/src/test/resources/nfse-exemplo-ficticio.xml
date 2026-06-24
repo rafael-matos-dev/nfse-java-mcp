@@ -7,6 +7,7 @@
     <cLocIncid>3550308</cLocIncid>
     <xLocIncid>Sao Paulo</xLocIncid>
     <xTribNac>Servico de teste ficticio.</xTribNac>
+    <xTribMun>Servico municipal ficticio.</xTribMun>
     <verAplic>nfse-java-mcp</verAplic>
     <ambGer>2</ambGer>
     <tpEmis>1</tpEmis>
@@ -71,6 +72,7 @@
           </locPrest>
           <cServ>
             <cTribNac>010101</cTribNac>
+            <cTribMun>001</cTribMun>
             <xDescServ>Servico de teste ficticio para o DANFSe</xDescServ>
           </cServ>
         </serv>

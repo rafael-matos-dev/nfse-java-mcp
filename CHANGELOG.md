@@ -11,6 +11,12 @@ e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
 - DANFSe muito mais próximo do oficial: **logo oficial da NFS-e** no cabeçalho (CC BY-ND, ver
   `nfse-danfse/NOTICE.md`), aviso **"NFS-e SEM VALIDADE JURÍDICA"** em vermelho quando a nota é de
   homologação (lê `ambGer`/`tpAmb` do XML), cabeçalho em 3 colunas e layout mais compacto.
+- Descrição do **Código de Tributação Municipal** (`xTribMun`) e do **NBS** (`cNBS`/`xNBS`), que vêm
+  no XML mas não eram exibidos; rótulos do documento com **acentuação** correta.
+- **Resolução do nome do município** dos endereços: usa os pares código→nome do próprio XML
+  (prestador/emissão) e, para municípios de fora (ex.: tomador em outra cidade), consulta a **API do
+  IBGE** (cache em memória, timeout curto, *fallback* gracioso ao código; desative com
+  `-Dnfse.danfse.ibge=false`).
 - `DanfseConfig` — identificação opcional do município (brasão + contato da prefeitura), já que esses
   dados não vêm no XML nem há API pública que os forneça. `DanfseGenerator.gerarPdf(xml, producao, config[, saida])`.
 
