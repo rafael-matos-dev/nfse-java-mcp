@@ -5,6 +5,13 @@ e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+## [0.4.5] - 2026-06-25
+
+### Adicionado
+- DANFSe: o logo do emitente (e o brasão) agora é **redimensionado automaticamente** (máx. 600 px no
+  maior lado, proporção preservada) ao ser embutido — não é mais preciso redimensionar a imagem antes;
+  um logo grande não infla o PDF. Aceita PNG/JPG/GIF/SVG (SVG mantém o vetor).
+
 ## [0.4.4] - 2026-06-25
 
 ### Corrigido
@@ -93,7 +100,8 @@ e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
 - `nfse-cli` — CLI para humanos e agentes que rodam shell.
 - Homologação por padrão; produção exige confirmação explícita.
 
-[Não lançado]: https://github.com/rafael-matos-dev/nfse-java-mcp/compare/v0.4.4...HEAD
+[Não lançado]: https://github.com/rafael-matos-dev/nfse-java-mcp/compare/v0.4.5...HEAD
+[0.4.5]: https://github.com/rafael-matos-dev/nfse-java-mcp/releases/tag/v0.4.5
 [0.4.4]: https://github.com/rafael-matos-dev/nfse-java-mcp/releases/tag/v0.4.4
 [0.4.3]: https://github.com/rafael-matos-dev/nfse-java-mcp/releases/tag/v0.4.3
 [0.4.2]: https://github.com/rafael-matos-dev/nfse-java-mcp/releases/tag/v0.4.2

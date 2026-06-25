@@ -74,24 +74,7 @@ public final class DanfseGenerator {
      */
     public static String dataUriImagem(Path arquivo) {
         Objects.requireNonNull(arquivo, "arquivo is required");
-        try {
-            String nome = arquivo.getFileName().toString().toLowerCase();
-            String mime;
-            if (nome.endsWith(".png")) {
-                mime = "image/png";
-            } else if (nome.endsWith(".jpg") || nome.endsWith(".jpeg")) {
-                mime = "image/jpeg";
-            } else if (nome.endsWith(".gif")) {
-                mime = "image/gif";
-            } else if (nome.endsWith(".svg")) {
-                mime = "image/svg+xml";
-            } else {
-                mime = "image/png";
-            }
-            return "data:" + mime + ";base64," + Base64.getEncoder().encodeToString(Files.readAllBytes(arquivo));
-        } catch (IOException exception) {
-            throw new DanfseException("Nao foi possivel ler a imagem: " + arquivo, exception);
-        }
+        return ImagemDataUri.de(arquivo);
     }
 
     /** Logo oficial da NFS-e (CC BY-ND), embutido como data URI. Carregado uma vez do classpath. */

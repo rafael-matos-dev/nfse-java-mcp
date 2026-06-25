@@ -122,7 +122,7 @@ Disponível no Maven Central:
 <dependency>
   <groupId>io.github.rafael-matos-dev</groupId>
   <artifactId>nfse-sdk</artifactId>
-  <version>0.4.4</version>
+  <version>0.4.5</version>
 </dependency>
 ```
 
@@ -160,19 +160,31 @@ O layout segue o padrão nacional (NT 008): logo oficial da NFS-e, aviso **"NFS-
 
 O nome do município dos endereços é resolvido a partir do próprio XML quando possível; para municípios de fora (ex.: tomador em outra cidade), consulta a **API do IBGE** (com cache e *fallback* gracioso ao código). Para gerar 100% offline, use `-Dnfse.danfse.ibge=false`.
 
-Para incluir o **logo do emitente (prestador)** no cabeçalho (ao lado do logo da NFS-e):
+### Logo do emitente (prestador)
+
+Para incluir o **logo da empresa** no cabeçalho, ao lado do logo oficial da NFS-e:
 
 ```java
 var cfg = DanfseConfig.comLogoEmitente(DanfseGenerator.dataUriImagem(Path.of("logo.png")));
 byte[] pdf = DanfseGenerator.gerarPdf(nfseXml, false, cfg, Path.of("danfse.pdf"));
 ```
 
-CLI: `danfse --xml nota.xml --logo-emitente logo.png` · MCP: argumento `logoEmitenteArquivo`. O logo é limitado por CSS para nunca quebrar o layout; **tamanho sugerido ~300×120 px (PNG, fundo transparente)**.
+CLI: `danfse --xml nota.xml --logo-emitente logo.png` · MCP: argumento `logoEmitenteArquivo`.
 
-O brasão e o contato da prefeitura não vêm no XML (e não há API pública que os forneça); são opcionais via `DanfseConfig`:
+Aceita PNG, JPG, GIF e SVG. **Não precisa redimensionar antes**: imagens grandes são reduzidas automaticamente (máx. 600 px no maior lado, proporção preservada) para não inflar o PDF; o CSS ainda limita a altura no cabeçalho. Para melhor resultado, use PNG com fundo transparente.
+
+### Brasão e contato da prefeitura
+
+Não vêm no XML (e não há API pública que os forneça); são opcionais via `DanfseConfig` (todos os campos são opcionais — o último é o logo do emitente):
 
 ```java
-var cfg = new DanfseConfig("Belo Horizonte", brasaoDataUri, "Secretaria de Fazenda", "(31) 3000-0000", "nfse@pbh.gov.br");
+var cfg = new DanfseConfig(
+    "Belo Horizonte",        // nome do município (sobrepõe o do XML)
+    brasaoDataUri,           // brasão (data URI) — use DanfseGenerator.dataUriImagem(...)
+    "Secretaria de Fazenda", // departamento
+    "(31) 3000-0000",        // telefone
+    "nfse@pbh.gov.br",       // e-mail
+    logoEmitenteDataUri);    // logo do emitente (ou null)
 byte[] pdf = DanfseGenerator.gerarPdf(nfseXml, false, cfg, Path.of("danfse.pdf"));
 ```
 
