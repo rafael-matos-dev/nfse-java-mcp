@@ -1,7 +1,7 @@
 package br.com.nfse.sdk.xml.evento;
 
+import br.com.nfse.sdk.xml.dps.DpsXmlBuilder;
 import java.io.StringWriter;
-import java.time.format.DateTimeFormatter;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.TransformerFactory;
@@ -13,7 +13,6 @@ import org.w3c.dom.Element;
 public final class PedidoRegistroEventoXmlBuilder {
     private static final String NAMESPACE = "http://www.sped.fazenda.gov.br/nfse";
     private static final String VERSAO_EVENTO = "1.00";
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
 
     public String buildCancelamento(int tipoAmbiente, CancelamentoNfse cancelamento) {
         try {
@@ -32,7 +31,7 @@ public final class PedidoRegistroEventoXmlBuilder {
             append(
                 infPedReg,
                 "dhEvento",
-                DATE_TIME_FORMATTER.format(cancelamento.dataHoraEvento())
+                DpsXmlBuilder.formatarDataHora(cancelamento.dataHoraEvento())
             );
             append(infPedReg, cancelamento.autorPessoaJuridica() ? "CNPJAutor" : "CPFAutor", cancelamento.cpfCnpjAutor());
             append(infPedReg, "chNFSe", cancelamento.chaveAcesso());

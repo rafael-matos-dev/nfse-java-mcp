@@ -57,7 +57,8 @@ class DanfseGeneratorTest {
 
     @Test
     void producaoNaoMostraAvisoDeHomologacao() throws Exception {
-        String prod = NfseXmlReaderTest.xmlExemplo().replace("<ambGer>2</ambGer>", "<ambGer>1</ambGer>");
+        // produção = tpAmb=1 (ambGer permanece 2, como nas notas reais).
+        String prod = NfseXmlReaderTest.xmlExemplo().replace("<tpAmb>2</tpAmb>", "<tpAmb>1</tpAmb>");
         byte[] pdf = DanfseGenerator.gerarPdf(prod, true);
         try (PDDocument doc = PDDocument.load(new ByteArrayInputStream(pdf))) {
             String texto = new PDFTextStripper().getText(doc);

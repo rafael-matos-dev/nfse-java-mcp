@@ -5,6 +5,16 @@ e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+## [0.4.4] - 2026-06-25
+
+### Corrigido
+- **DANFSe estampava "NFS-e SEM VALIDADE JURÍDICA" em notas de PRODUÇÃO.** O indicador de ambiente
+  passou a ser o `tpAmb` da DPS (1=produção, 2=homologação, conforme o XSD), e não o `ambGer`
+  ("ambiente gerador") — uma nota de produção pode ter `ambGer=2` e `tpAmb=1`, e a leitura anterior
+  a marcava como homologação.
+- **Fuso horário**: `dhEmi` (DPS) e `dhEvento` (cancelamento) agora são sempre formatados em
+  `America/Sao_Paulo`, independentemente do fuso do servidor (evita offset errado, ex.: `Z`/UTC).
+
 ## [0.4.3] - 2026-06-24
 
 ### Adicionado
@@ -83,7 +93,8 @@ e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
 - `nfse-cli` — CLI para humanos e agentes que rodam shell.
 - Homologação por padrão; produção exige confirmação explícita.
 
-[Não lançado]: https://github.com/rafael-matos-dev/nfse-java-mcp/compare/v0.4.3...HEAD
+[Não lançado]: https://github.com/rafael-matos-dev/nfse-java-mcp/compare/v0.4.4...HEAD
+[0.4.4]: https://github.com/rafael-matos-dev/nfse-java-mcp/releases/tag/v0.4.4
 [0.4.3]: https://github.com/rafael-matos-dev/nfse-java-mcp/releases/tag/v0.4.3
 [0.4.2]: https://github.com/rafael-matos-dev/nfse-java-mcp/releases/tag/v0.4.2
 [0.4.1]: https://github.com/rafael-matos-dev/nfse-java-mcp/releases/tag/v0.4.1

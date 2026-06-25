@@ -1,6 +1,7 @@
 package br.com.nfse.danfse;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -74,12 +75,21 @@ class NfseXmlReaderTest {
     }
 
     @Test
-    void detectaHomologacaoPeloAmbGer() throws Exception {
-        // o XML ficticio tem ambGer=2 (homologacao)
+    void detectaAmbientePeloTpAmbDaDpsNaoPeloAmbGer() throws Exception {
+        // o XML ficticio tem tpAmb=2 (homologacao)
         assertTrue(NfseXmlReader.read(xmlExemplo()).homologacao());
-        // ambGer=1 => producao
-        String prod = xmlExemplo().replace("<ambGer>2</ambGer>", "<ambGer>1</ambGer>");
-        assertTrue(!NfseXmlReader.read(prod).homologacao());
+        // tpAmb=1 => producao
+        String prod = xmlExemplo().replace("<tpAmb>2</tpAmb>", "<tpAmb>1</tpAmb>");
+        assertFalse(NfseXmlReader.read(prod).homologacao());
+    }
+
+    @Test
+    void producaoComAmbGer2NaoEhMarcadaComoHomologacao() throws Exception {
+        // Caso real: nota de PRODUCAO traz ambGer=2 mas tpAmb=1. Deve contar como producao.
+        String prod = xmlExemplo()
+            .replace("<tpAmb>2</tpAmb>", "<tpAmb>1</tpAmb>"); // ambGer permanece 2
+        assertFalse(NfseXmlReader.read(prod).homologacao(),
+            "producao (tpAmb=1) nao pode ser homologacao mesmo com ambGer=2");
     }
 
     @Test

@@ -2,6 +2,8 @@ package br.com.nfse.sdk.xml.dps;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
@@ -15,6 +17,13 @@ import java.io.StringWriter;
 public final class DpsXmlBuilder {
     private static final String NAMESPACE = "http://www.sped.fazenda.gov.br/nfse";
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
+    // dhEmi sempre no fuso oficial (America/Sao_Paulo), independente do fuso do servidor.
+    private static final ZoneId ZONA_BR = ZoneId.of("America/Sao_Paulo");
+
+    /** Formata um instante no fuso oficial (America/Sao_Paulo), p/ dhEmi e dhEvento. */
+    public static String formatarDataHora(OffsetDateTime dataHora) {
+        return DATE_TIME_FORMATTER.format(dataHora.atZoneSameInstant(ZONA_BR));
+    }
 
     public String build(Dps dps) {
         try {
@@ -38,7 +47,7 @@ public final class DpsXmlBuilder {
 
     private void buildInfDps(Element parent, Dps.InfDps data) {
         append(parent, "tpAmb", data.tipoAmbiente());
-        append(parent, "dhEmi", DATE_TIME_FORMATTER.format(data.dataHoraEmissao()));
+        append(parent, "dhEmi", formatarDataHora(data.dataHoraEmissao()));
         append(parent, "verAplic", data.versaoAplicativo());
         append(parent, "serie", data.serie());
         append(parent, "nDPS", data.numero());

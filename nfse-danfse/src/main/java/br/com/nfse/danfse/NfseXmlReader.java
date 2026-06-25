@@ -42,7 +42,7 @@ public final class NfseXmlReader {
 
             return new Danfse(
                 chaveAcesso(infNfse),
-                homologacao(infNfse, dps),
+                homologacao(dps),
                 identificacao(infNfse, dps),
                 prestador(emit, prest, municipios),
                 tomador(toma, municipios),
@@ -78,13 +78,12 @@ public final class NfseXmlReader {
         }
     }
 
-    // ambGer (NFS-e) ou tpAmb (DPS): 2 = homologacao/producao restrita, 1 = producao.
-    private static boolean homologacao(Element infNfse, Element dps) {
-        String amb = text(infNfse, "ambGer");
-        if (amb == null) {
-            amb = text(dps, "tpAmb");
-        }
-        return "2".equals(amb);
+    // Indicador de ambiente = tpAmb da DPS (1=producao, 2=homologacao), conforme o XSD.
+    // ATENCAO: NAO usar ambGer (= "ambiente gerador da NFS-e", outro conceito): uma nota de
+    // producao pode ter ambGer=2 e tpAmb=1, e usar ambGer marcaria producao como homologacao
+    // (estampando "SEM VALIDADE JURIDICA" numa nota valida).
+    private static boolean homologacao(Element dps) {
+        return "2".equals(text(dps, "tpAmb"));
     }
 
     private static String chaveAcesso(Element infNfse) {
